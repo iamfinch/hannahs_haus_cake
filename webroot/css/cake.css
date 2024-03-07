@@ -74,21 +74,17 @@ th {
     white-space: nowrap;
 }
 
+
 /* Nav bar */
 .top-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 112rem;
-    padding: 2rem;
-    margin: 0 auto 2rem;
-}
-.top-nav-title a {
-    font-size: 2.4rem;
-    color: #d33c43;
-}
-.top-nav-title span {
-    color: #404041;
+    max-width: 130rem;
+    padding: 1rem;
+    margin: 0rem auto;
+    background-color: white;
+    border-radius: 5px;
 }
 .top-nav-links a {
     margin: 0 0.5rem;

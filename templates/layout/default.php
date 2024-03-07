@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -18,6 +19,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,23 +35,38 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
+
 <body>
-    <nav class="top-nav">
+    <div>
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
+           <b><h4 style="margin: 0rem; background-color: #818d97;">Welcome to Hannah's Haus and Farm</h4></b>
         </div>
-        <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
-        </div>
-    </nav>
-    <main class="main">
-        <div class="container">
-            <?= $this->Flash->render() ?>
-            <?= $this->fetch('content') ?>
-        </div>
-    </main>
-    <footer>
-    </footer>
+    </div>
+    <div style="background-color:#8FACC0; padding: 1rem;">
+        <nav class="top-nav">
+            <div class="top-nav-links">
+                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Home</a>
+                <a target="_blank" rel="noopener" href="https://api.cakephp.org/">Dog Profiles</a>
+                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Gallery</a>
+                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Policies</a>
+                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Privacy</a>
+            </div>
+            <div class="top-nav-links">
+                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Apply</a>
+            </div>
+        </nav>
+    </div>
+    <div style="background-color: #D2E4F1; padding: 1rem; min-height: 100vh; height: 100%;">
+        <main class="main">
+            <div class="container">
+                <?= $this->Flash->render() ?>
+                <?= $this->fetch('content') ?>
+            </div>
+        </main>
+    </div>
 </body>
+<footer style="background-color:#818d97;">
+<p>test</p>
+</footer>
+
 </html>
