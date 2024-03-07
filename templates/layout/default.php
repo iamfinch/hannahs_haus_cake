@@ -58,7 +58,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     </div>
     <div style="background-color: #D2E4F1; padding: 1rem; min-height: 100vh; height: 100%;">
         <main class="main">
-            <div class="container">
+            <div class="container" style="background-color:white; padding:2rem !important; border-radius: 3px;">
                 <?= $this->Flash->render() ?>
                 <?= $this->fetch('content') ?>
             </div>
