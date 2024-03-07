@@ -19,13 +19,14 @@ services:
       - application
   #cakephp for framework
   php-fpm:
-    image: webdevops/php-nginx:7.4
+    image: webdevops/php-nginx:8.2
     container_name: myapp-webserver
     working_dir: /app
     volumes:
       - ./:/app
     environment:
       - WEB_DOCUMENT_ROOT=/app/webroot
+      - DATABASE_URL=mysql://my_user:secret@hannahs_haus_db/my_app
     ports:
       - "80:80"
     networks:
