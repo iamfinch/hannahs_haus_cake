@@ -11,6 +11,12 @@ namespace App\Controller;
  */
 class UsersController extends AppController
 {
+    public function beforeFilter(\Cake\Event\EventInterface $event) {
+        parent::beforeFilter($event);
+
+        $this->Authentication->allowUnauthenticated(['login', 'index', 'add']);
+    }
+
     /**
      * Index method
      *
@@ -101,5 +107,18 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function login()
+    {
+        $result = $this->Authentication->getResult();
+        // If the user is logged in send them away.
+        if ($result->isValid()) {
+            $target = $this->Authentication->getLoginRedirect() ?? '/';
+            return $this->redirect($target);
+        }
+        if ($this->request->is('post')) {
+            $this->Flash->error('Invalid username or password');
+        }
     }
 }

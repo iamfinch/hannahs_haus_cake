@@ -33,8 +33,8 @@ class UsersFixture extends TestFixture
                 'everOwnedDogs' => 1,
                 'primaryCareTaker' => 1,
                 'isAdmin' => 1,
-                'dateCreated' => '2024-03-05 20:49:06',
-                'lastModified' => '2024-03-05 20:49:06',
+                'dateCreated' => '2024-03-07 20:34:47',
+                'lastModified' => '2024-03-07 20:34:47',
             ],
         ];
         parent::init();
