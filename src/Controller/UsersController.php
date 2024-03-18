@@ -52,6 +52,15 @@ class UsersController extends AppController
      */
     public function add()
     {
+        $countries = $this->fetchModel('countries');
+        $foundCountries = $countries->find('list', ["keyField" => "id", "valueField" => "name"]);
+
+        $housingTypes = $this->fetchModel("HousingTypes");
+        $foundHousingTypes = $housingTypes->find("list", [
+                "keyField" => "id",
+                "valueField" => "name"
+        ]);
+        
         $user = $this->Users->newEmptyEntity();
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -62,7 +71,10 @@ class UsersController extends AppController
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
+
         $this->set(compact('user'));
+        $this->set(compact('foundCountries'));
+        $this->set(compact('foundHousingTypes'));
     }
 
     /**
