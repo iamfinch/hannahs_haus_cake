@@ -86,6 +86,17 @@ class UsersTable extends Table
             ->nonNegativeInteger('stateId')
             ->requirePresence('stateId', 'create')
             ->notEmptyString('stateId');
+        
+        $validator
+            ->scalar('address1')
+            ->maxLength('address1', 255)
+            ->requirePresence('address1', 'create')
+            ->notEmptyString('address1');
+
+        $validator
+            ->scalar('address2')
+            ->maxLength('address2', 255)
+            ->allowEmptyString('address2');;
 
         $validator
             ->integer('zipcode')
