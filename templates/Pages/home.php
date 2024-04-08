@@ -20,8 +20,6 @@ use Cake\Datasource\ConnectionManager;
 use Cake\Error\Debugger;
 use Cake\Http\Exception\NotFoundException;
 
-$this->disableAutoLayout();
-
 $checkConnection = function (string $name) {
     $error = null;
     $connected = false;
@@ -62,7 +60,7 @@ endif;
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        CakePHP: the rapid development PHP framework:
+        Hannah\&apos;s Haus
         <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('icon') ?>
