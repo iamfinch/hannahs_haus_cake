@@ -4,67 +4,83 @@
  * @var \App\Model\Entity\Dog $dog
  */
 ?>
-<div class="row">
-    <div class="column-responsive column-100">
-        <div class="dogs view content">
-            <div class="row">
-                <div class="column-responsive column-70">
-                    image courosel
-                </div>
+<div class="column">
+    <!-- <aside class="column">
+        <div class="side-nav">
+            <h4 class="heading"><?= __('Actions') ?></h4>
+            <?= $this->Html->link(__('Edit Dog'), ['action' => 'edit', $dog->id], ['class' => 'side-nav-item']) ?>
+            <?= $this->Form->postLink(__('Delete Dog'), ['action' => 'delete', $dog->id], ['confirm' => __('Are you sure you want to delete # {0}?', $dog->id), 'class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(__('List Dogs'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(__('New Dog'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
+        </div>
+    </aside> -->
+    <div class="row dogs view content">
+        <!-- Image Carousel-->
+        <div>
+            <?= $this->Breadcrumbs->render(
+                ['class' => 'breadcrumbs-trail'],
+                ['separator' => '<i class="fa fa-angle-right"></i>']
+            );?>
+        </div>
 
-                <div class="column-responsive column-30">
-                    <h3><?= h($dog->name) ?></h3>
+        <div class="column-responsive column-60" style="border: black 1px solid">
+            <h3>Image Carousel</h3>
+        </div>
+        
+        <!-- Spacer -->
+        <div class="column-responsive column-10"></div>
 
-                    <table>
-                        <tr>
-                            <th><?= __('Color') ?></th>
-                            <td><?= h($dog->color) ?></td>
-                        </tr>
-                        <tr>
-                            <th><?= __('DateBorn') ?></th>
-                            <td><?= h($dog->dateBorn) ?></td>
-                        </tr>
-                        <tr>
-                            <th><?= __('Adopted') ?></th>
-                            <td><?= $dog->adopted ? __('Yes') : __('No'); ?></td>
-                        </tr>
-                        <?php if ($dog->adopted && !empty($dog->adoptedDate)) {?>
-                            <tr>
-                                <th><?= __('AdoptedDate') ?></th>
-                                <td><?= $dog->adoptedDate ? h($dog->adoptedDate) : ''?></td>
-                            </tr>
-                        <?php }?>
-                        <tr>
-                            <th><?= __('Retired') ?></th>
-                            <td><?= $dog->retired ? __('Yes') : __('No'); ?></td>
-                        </tr>
-                        <?php if ($dog->retired && !empty($dog->retiredDate)) {?>
-                            <tr>
-                                <th><?= __('RetiredDate') ?></th>
-                                <td><?= h($dog->retiredDate) ?></td>
-                            </tr>
-                        <?php } ?>
-                    </table>
-                </div>
-            </div>
+        <!-- Dog Info -->
+        <div class="column-responsive column-30">
+            <h3><?= h($dog->name) ?></h3>
+            <table>
+                <tr>
+                    <th><?= __('Name') ?></th>
+                    <td><?= h($dog->name) ?></td>
+                </tr>
 
-            <?php if (!empty($dog->about)) {?>
-                <div class="row">
-                    <div class="column-responsive column-100">
-                        <?= $dog->about?>
-                    </div>
-                </div>
-            <?php } ?>
+                <tr>
+                    <th><?= __('Color') ?></th>
+                    <td><?= h($dog->color) ?></td>
+                </tr>
 
-            <div class="row">
-                <div class="column-responsive column-30">
-                    
-                </div>
+                <tr>
+                    <th><?= __('DateBorn') ?></th>
+                    <td><?= h($dog->dateBorn) ?></td>
+                </tr>
 
-                <div class="column-responsive column-70">
-                    
-                </div>
-            </div>
+                <?php if ($dog->retired && $dog->retiredDate) { ?>
+                    <tr>
+                        <th><?= __('RetiredDate') ?></th>
+                        <td><?= h($dog->retiredDate) ?></td>
+                    </tr>
+                <?php } ?>
+
+                <?php if ($dog->adopted && $dog->adoptedDate) { ?>
+                    <tr>
+                        <th><?= __('AdoptedDate') ?></th>
+                        <td><?= h($dog->adoptedDate) ?></td>
+                    </tr>
+                <?php } ?>
+            </table>
         </div>
     </div>
+
+    <?php if ($dog->about) { ?>
+        <div class="row">
+            <p><?= h($dog->about)?></p>
+        </div>
+    <?php } ?>
+
+    <?php if ($dog->experiences || $dog->tags) {?>
+        <div class="row">
+            <?php if ($dog->tags) { ?>
+                <p><?= h($dog->tags)?></p>
+            <?php } ?>
+
+            <?php if ($dog->experiences) { ?>
+                <p><?= h($dog->experiences)?></p>
+            <?php } ?>
+        </div>
+    <?php } ?>
 </div>
