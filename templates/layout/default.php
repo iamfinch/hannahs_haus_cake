@@ -15,7 +15,7 @@
  * @var \App\View\AppView $this
  */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
+$cakeDescription = 'Hannah\'s Haus : ';
 ?>
 <!DOCTYPE html>
 <html>
@@ -24,7 +24,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <?= $cakeDescription ?>:
+        <?= $cakeDescription ?>
         <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('icon') ?>
@@ -46,14 +46,14 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <body>
     <div>
         <div class="top-nav-title">
-           <b><h4 style="margin: 0rem; background-color: #818d97;">Welcome to Hannah's Haus and Farm</h4></b>
+            <b><h4 style="margin: 0rem; background-color: #818d97;">Welcome to Hannah's Haus and Farm</h4></b>
         </div>
     </div>
     <div style="background-color:#8FACC0; padding: 1rem;">
         <nav class="top-nav">
             <div class="top-nav-links">
-                <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Home</a>
-                <a target="_blank" rel="noopener" href="https://api.cakephp.org/">Dog Profiles</a>
+            <?= $this->Html->link(__('Home'), ['controller' => '/', 'action' => 'index']) ?>
+                <?= $this->Html->link(__('Dog Profiles'), ['controller' => 'dogs', 'action' => 'index']) ?>
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Gallery</a>
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Policies</a>
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Privacy</a>
