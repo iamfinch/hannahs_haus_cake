@@ -35,12 +35,19 @@ $cakeDescription = 'Hannah\'s Haus : ';
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" 
-        href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" 
-        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" 
         crossorigin="anonymous"
-    >
+    ></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+        crossorigin="anonymous">
 </head>
 
 <body>
@@ -49,31 +56,39 @@ $cakeDescription = 'Hannah\'s Haus : ';
             <b><h4 style="margin: 0rem; background-color: #818d97;">Welcome to Hannah's Haus and Farm</h4></b>
         </div>
     </div>
+
     <div style="background-color:#8FACC0; padding: 1rem;">
         <nav class="top-nav">
             <div class="top-nav-links">
+
             <?= $this->Html->link(__('Home'), ['controller' => '/', 'action' => 'index']) ?>
                 <?= $this->Html->link(__('Dog Profiles'), ['controller' => 'dogs', 'action' => 'index']) ?>
+
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Gallery</a>
+
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Policies</a>
+
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Privacy</a>
             </div>
+
             <div class="top-nav-links">
                 <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Apply</a>
             </div>
         </nav>
     </div>
+
     <div style="background-color: #D2E4F1; padding: 1rem; min-height: 100vh; height: 100%;">
         <main class="main">
             <div class="container">
                 <?= $this->Flash->render() ?>
+
                 <?= $this->fetch('content') ?>
             </div>
         </main>
     </div>
 </body>
 <footer style="background-color:#818d97;">
-<p>test</p>
+    test
 </footer>
 
 </html>

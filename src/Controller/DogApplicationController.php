@@ -6,6 +6,7 @@ namespace App\Controller;
 /**
  * DogApplication Controller
  *
+ * @property \App\Model\Table\DogApplicationTable $DogApplication
  * @method \App\Model\Entity\DogApplication[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class DogApplicationController extends AppController
