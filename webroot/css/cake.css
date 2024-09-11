@@ -193,6 +193,10 @@ th {
     color: red;
 }
 
+.LogoPicSize {
+    border-radius: 50rem;
+}
+
 /* Error */
 .error-container {
     align-items: center;
