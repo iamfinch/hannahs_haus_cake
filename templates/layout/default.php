@@ -71,12 +71,11 @@ $cakeDescription = 'Hannah\'s Haus : ';
             </div>
             <nav class="top-nav">
                 <div class="top-nav-links">
-
                     <?= $this->Html->link(__('Home'), ['controller' => '/', 'action' => 'index']) ?>
 
                     <?= $this->Html->link(__('Dogs'), ['controller' => 'dogs', 'action' => 'index']) ?>
 
-                    <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Gallery</a>
+                    <?= $this->Html->link(__('Gallery'), ['controller' => 'pages', 'action' => 'gallery']) ?>
 
                     <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Policies</a>
 
@@ -84,7 +83,11 @@ $cakeDescription = 'Hannah\'s Haus : ';
                 </div>
 
                 <div class="top-nav-links">
-                    <a target="_blank" rel="noopener" href="https://book.cakephp.org/4/">Apply</a>
+                    <?php if ($this->Authentication->getIdentity()) {?>
+                        <?= $this->Html->link(__('Profile'), ['controller' => 'users', 'action' => 'login']) ?>
+                    <?php } else { ?>
+                        <?= $this->Html->link(__('Login'), ['controller' => 'users', 'action' => 'login']) ?>
+                    <?php }?>
                 </div>
             </nav>
         </div>
@@ -100,6 +103,7 @@ $cakeDescription = 'Hannah\'s Haus : ';
         </div>
     </body>
 
+<<<<<<< HEAD
     <footer style="background-color:#818d97; height: 180px;">
         <div class="container">
             <div class="row" style="padding: 12px 0px;">
@@ -113,6 +117,18 @@ $cakeDescription = 'Hannah\'s Haus : ';
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
                     <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
                 </div>
+=======
+    <footer style="background-color:#818d97;">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+                <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
+
+                <?= $this->Html->link(__('Adoption Policy'), ['controller' => 'pages', 'action' => 'adoption_policy']) ?>
+                
+                <?= $this->Html->link(__('Contact Us'), ['controller' => 'pages', 'action' => 'contact_us']) ?>
+
+                <?= $this->Html->link(__('Privacy Policy'), ['controller' => 'pages', 'action' => 'privacy_policy']) ?>
+>>>>>>> 2809413 (wip)
             </div>
         </div>
     </footer>

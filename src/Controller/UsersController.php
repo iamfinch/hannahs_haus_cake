@@ -13,7 +13,6 @@ class UsersController extends AppController
 {
     public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
-
         $this->Authentication->allowUnauthenticated(['login', 'index', 'add']);
     }
 
@@ -52,6 +51,7 @@ class UsersController extends AppController
      */
     public function add()
     {
+        $this->set('authUser', $this->Authorization->user('id'));
         $countries = $this->fetchModel('countries');
         $foundCountries = $countries->find('list', ["keyField" => "id", "valueField" => "name"]);
 

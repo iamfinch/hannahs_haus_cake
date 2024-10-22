@@ -10,7 +10,9 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Users'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+            <?php if ($authUser) {
+                echo $this->Html->link(__('List Users'), ['action' => 'index'], ['class' => 'side-nav-item']);
+            }?>
         </div>
     </aside>
     <div class="column-responsive column-80">
