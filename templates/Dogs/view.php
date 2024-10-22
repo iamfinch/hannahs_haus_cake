@@ -4,6 +4,18 @@
  * @var \App\Model\Entity\Dog $dog
  */
 ?>
+<?php
+$isAdmin = $this->request->getSession()->read("User.isAdmin");
+$button = $isAdmin ? $this->Html->link(
+    'View Applications',
+    "/dogApplication/view/{$dog->id}",
+    ['class' => 'button', 'target' => '_blank']
+) : $this->Html->link(
+    'Apply to Adopt!',
+    "/dogApplication/add",
+    ['class' => 'button', 'target' => '_blank']
+);
+?>
 <div class="column">
     <!-- <aside class="column">
         <div class="side-nav">
@@ -26,12 +38,9 @@
         <div class="column-responsive column-60" style="border: black 1px solid">
             <h3>Image Carousel</h3>
         </div>
-        
-        <!-- Spacer -->
-        <div class="column-responsive column-10"></div>
 
         <!-- Dog Info -->
-        <div class="column-responsive column-30">
+        <div class="column-responsive column-offset-10 column-30">
             <h3><?= h($dog->name) ?></h3>
             <table>
                 <tr>
@@ -83,4 +92,8 @@
             <?php } ?>
         </div>
     <?php } ?>
+
+    <div class="row">
+        
+    </div>
 </div>
