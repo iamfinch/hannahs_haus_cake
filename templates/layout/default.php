@@ -21,18 +21,27 @@ $cakeDescription = 'Hannah\'s Haus : ';
 <html>
     <head>
         <?= $this->Html->charset() ?>
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>
             <?= $cakeDescription ?>
             <?= $this->fetch('title') ?>
         </title>
+
         <?= $this->Html->meta('icon') ?>
 
-        <?= $this->Html->css(['normalize.min', 'milligram.min', 'fonts', 'cake']) ?>
+        <?= $this->Html->css([
+            'normalize.min',
+            'milligram.min',
+            'fonts',
+            'cake'
+        ]) ?>
 
         <?= $this->fetch('meta') ?>
         <?= $this->fetch('css') ?>
         <?= $this->fetch('script') ?>
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -40,8 +49,8 @@ $cakeDescription = 'Hannah\'s Haus : ';
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" 
-            crossorigin="anonymous"
-        ></script>
+            crossorigin="anonymous">
+        </script>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
             rel="stylesheet"
@@ -50,13 +59,16 @@ $cakeDescription = 'Hannah\'s Haus : ';
     </head>
 
     <body>
-        <div>
+        <!-- <div>
             <div class="top-nav-title">
                 <b><h4 style="margin: 0rem; background-color: #818d97;">Hannah's Haus and Farm</h4></b>
             </div>
-        </div>
+        </div> -->
 
         <div style="background-color:#8FACC0; padding: 1rem;">
+            <div class="top-nav-title">
+                <b><h4>Hannah's Haus and Farm</h4></b>
+            </div>
             <nav class="top-nav">
                 <div class="top-nav-links">
 
@@ -77,7 +89,7 @@ $cakeDescription = 'Hannah\'s Haus : ';
             </nav>
         </div>
 
-        <div style="background-color: #D2E4F1; padding: 1rem; min-height: 100vh; height: 100%;">
+        <div style="background-color: ##F0F0F0; padding: 1rem; min-height: 100vh; height: 100%;">
             <main class="main">
                 <div class="container">
                     <?= $this->Flash->render() ?>
@@ -87,12 +99,21 @@ $cakeDescription = 'Hannah\'s Haus : ';
             </main>
         </div>
     </body>
-    <footer style="background-color:#818d97;">
-        <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
+
+    <footer style="background-color:#818d97; height: 180px;">
+        <div class="container">
+            <div class="row" style="padding: 12px 0px;">
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6" style="justify-content:right">
+                    <?php echo $this->Html->image('cropped_company_logo.png', [
+                        'alt' => 'Hannah\'s Haus & Farm Logo',
+                        'class' => 'img-fluid w-50 d-block mx-auto LogoPicSize'
+                    ]);?>
+                </div>
+                
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+                    <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
+                </div>
             </div>
         </div>
     </footer>
-
 </html>
