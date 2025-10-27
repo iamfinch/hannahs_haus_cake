@@ -103,7 +103,6 @@ $cakeDescription = 'Hannah\'s Haus : ';
         </div>
     </body>
 
-<<<<<<< HEAD
     <footer style="background-color:#818d97; height: 180px;">
         <div class="container">
             <div class="row" style="padding: 12px 0px;">
@@ -113,22 +112,16 @@ $cakeDescription = 'Hannah\'s Haus : ';
                         'class' => 'img-fluid w-50 d-block mx-auto LogoPicSize'
                     ]);?>
                 </div>
-                
+
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
                     <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
+
+                    <?= $this->Html->link(__('Adoption Policy'), ['controller' => 'pages', 'action' => 'adoption_policy']) ?>
+
+                    <?= $this->Html->link(__('Contact Us'), ['controller' => 'pages', 'action' => 'contact_us']) ?>
+
+                    <?= $this->Html->link(__('Privacy Policy'), ['controller' => 'pages', 'action' => 'privacy_policy']) ?>
                 </div>
-=======
-    <footer style="background-color:#818d97;">
-        <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-                <?= $this->Html->link(__('About'), ['controller' => 'pages', 'action' => 'about']) ?>
-
-                <?= $this->Html->link(__('Adoption Policy'), ['controller' => 'pages', 'action' => 'adoption_policy']) ?>
-                
-                <?= $this->Html->link(__('Contact Us'), ['controller' => 'pages', 'action' => 'contact_us']) ?>
-
-                <?= $this->Html->link(__('Privacy Policy'), ['controller' => 'pages', 'action' => 'privacy_policy']) ?>
->>>>>>> 2809413 (wip)
             </div>
         </div>
     </footer>
