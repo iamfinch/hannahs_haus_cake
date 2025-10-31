@@ -1,0 +1,139 @@
+/**
+ * Form Validation Styles
+ *
+ * This stylesheet provides visual indicators for invalid form inputs.
+ * It works with CakePHP's built-in validation system which adds an 'error' class
+ * to form field containers when validation fails.
+ */
+
+/*
+ * Invalid Input Styling
+ *
+ * When a form field has validation errors, CakePHP wraps the input in a div with the 'error' class.
+ * These styles add visual indicators to the input field itself:
+ * - Red border outline on the input field
+ * - Red asterisk displayed after the input field using CSS pseudo-element
+ */
+
+/* Red border for invalid input fields */
+.input.error input[type="text"],
+.input.error input[type="email"],
+.input.error input[type="password"],
+.input.error input[type="tel"],
+.input.error input[type="number"],
+.input.error input[type="date"],
+.input.error input[type="datetime-local"],
+.input.error input[type="time"],
+.input.error input[type="url"],
+.input.error input[type="search"],
+.input.error select,
+.input.error textarea {
+    border-color: #dc3545;
+    border-width: 2px;
+    outline: none;
+}
+
+/* Focus state for invalid inputs - maintain red border */
+.input.error input[type="text"]:focus,
+.input.error input[type="email"]:focus,
+.input.error input[type="password"]:focus,
+.input.error input[type="tel"]:focus,
+.input.error input[type="number"]:focus,
+.input.error input[type="date"]:focus,
+.input.error input[type="datetime-local"]:focus,
+.input.error input[type="time"]:focus,
+.input.error input[type="url"]:focus,
+.input.error input[type="search"]:focus,
+.input.error select:focus,
+.input.error textarea:focus {
+    border-color: #dc3545;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/*
+ * Red asterisk after invalid input fields
+ *
+ * Uses CSS ::after pseudo-element on the container to display a red asterisk.
+ * The asterisk is positioned absolutely within the relatively-positioned container.
+ * This approach works because inputs themselves cannot have ::after pseudo-elements.
+ */
+.input.error {
+    position: relative;
+}
+
+/* Add asterisk using ::after pseudo-element on the container */
+.input.error::after {
+    content: " *";
+    color: #dc3545;
+    font-size: 1.8rem;
+    font-weight: bold;
+    position: absolute;
+    right: 1rem;
+    /* Position below the label, in the middle of the input field */
+    /* Milligram labels are 1.4rem line-height, inputs are ~3.8rem height */
+    top: 3.6rem; /* Label (1.4rem) + small margin (0.3rem) + half input height (1.9rem) */
+    pointer-events: none;
+    z-index: 10;
+    line-height: 1;
+}
+
+/* For select dropdowns, adjust position slightly */
+.input.error select ~ .error-message + *::after,
+.input.error.select::after {
+    top: 3.6rem;
+}
+
+/* For textareas, position at the top of the textarea (after label) */
+.input.error textarea ~ .error-message + *::after,
+.input.error:has(> textarea)::after {
+    top: 3.2rem; /* Align with first line of textarea */
+}
+
+/* Hide asterisk for radio and checkbox groups (they get border instead) */
+.input.error.radio::after,
+.input.error.checkbox::after {
+    display: none;
+}
+
+/*
+ * Radio and Checkbox Error Styling
+ *
+ * For radio buttons and checkboxes, we add a red border around the entire container
+ * since individual radio/checkbox styling would be less effective.
+ */
+.input.error.radio,
+.input.error.checkbox {
+    border: 2px solid #dc3545;
+    border-radius: 0.4rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Optional: Add a subtle background to error radio/checkbox groups */
+.input.error.radio,
+.input.error.checkbox {
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+/*
+ * Preserve CakePHP's default error message styling
+ *
+ * CakePHP displays validation error messages in .error-message divs.
+ * We don't modify these - they continue to work as designed.
+ * This ensures our visual indicators complement, not replace, the error messages.
+ */
+.error-message {
+    /* CakePHP's default error message styling is preserved */
+    /* Do not add any overriding styles here */
+}
+
+/*
+ * Responsive adjustments
+ */
+@media screen and (max-width: 640px) {
+    .input.error::after {
+        font-size: 1.6rem;
+        right: 0.5rem;
+    }
+}

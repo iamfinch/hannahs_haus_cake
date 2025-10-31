@@ -40,6 +40,19 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('fname');
         $this->setPrimaryKey('id');
+
+        // Users can adopt multiple dogs
+        $this->hasMany('AdoptedDogs', [
+            'className' => 'Dogs',
+            'foreignKey' => 'userId',
+            'propertyName' => 'adopted_dogs'
+        ]);
+
+        // Users can submit multiple adoption applications
+        $this->hasMany('DogApplications', [
+            'foreignKey' => 'userId',
+            'dependent' => true  // Delete applications if user is deleted
+        ]);
     }
 
     /**

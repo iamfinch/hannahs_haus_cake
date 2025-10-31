@@ -63,8 +63,6 @@
 
     <div class="table-responsive">
         <table>
-<<<<<<< HEAD
-=======
             <thead>
                 <tr>
                     <th><?= $this->Paginator->sort('id') ?></th>
@@ -82,7 +80,6 @@
                     <th class="actions"><?= __('Actions') ?></th>
                 </tr>
             </thead>
->>>>>>> 2809413 (wip)
             <tbody>
                 <?php foreach ($dogs as $dog): ?>
                 <tr>

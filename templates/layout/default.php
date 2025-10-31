@@ -35,7 +35,8 @@ $cakeDescription = 'Hannah\'s Haus : ';
             'normalize.min',
             'milligram.min',
             'fonts',
-            'cake'
+            'cake',
+            'form-validation'
         ]) ?>
 
         <?= $this->fetch('meta') ?>
@@ -84,7 +85,8 @@ $cakeDescription = 'Hannah\'s Haus : ';
 
                 <div class="top-nav-links">
                     <?php if ($this->Authentication->getIdentity()) {?>
-                        <?= $this->Html->link(__('Profile'), ['controller' => 'users', 'action' => 'login']) ?>
+                        <?= $this->Html->link(__('Profile'), ['controller' => 'users', 'action' => 'profile']) ?>
+                        <?= $this->Html->link(__('Logout'), ['controller' => 'users', 'action' => 'logout']) ?>
                     <?php } else { ?>
                         <?= $this->Html->link(__('Login'), ['controller' => 'users', 'action' => 'login']) ?>
                     <?php }?>

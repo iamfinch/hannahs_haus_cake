@@ -40,6 +40,20 @@ class DogsTable extends Table
         $this->setTable('dogs');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
+        // Dog belongs to a User (the adopting owner) - nullable
+        $this->belongsTo('Owners', [
+            'className' => 'Users',
+            'foreignKey' => 'userId',
+            'joinType' => 'LEFT',  // LEFT JOIN because userId can be null
+            'propertyName' => 'owner'
+        ]);
+
+        // Dog can have many applications
+        $this->hasMany('DogApplications', [
+            'foreignKey' => 'dogId',
+            'dependent' => true  // Delete applications if dog is deleted
+        ]);
     }
 
     /**
@@ -88,5 +102,34 @@ class DogsTable extends Table
             ->allowEmptyString('userId');
 
         return $validator;
+    }
+
+    /**
+     * Find available dogs (not adopted, not retired)
+     *
+     * @param \Cake\ORM\Query $query The query object
+     * @return \Cake\ORM\Query
+     */
+    public function findAvailable(Query $query): Query
+    {
+        return $query->where([
+            'Dogs.adopted' => false,
+            'Dogs.retired' => false
+        ]);
+    }
+
+    /**
+     * Find adopted dogs for a specific user
+     *
+     * @param \Cake\ORM\Query $query The query object
+     * @param array $options Options including 'userId'
+     * @return \Cake\ORM\Query
+     */
+    public function findAdoptedByUser(Query $query, array $options): Query
+    {
+        return $query->where([
+            'Dogs.userId' => $options['userId'],
+            'Dogs.adopted' => true
+        ]);
     }
 }

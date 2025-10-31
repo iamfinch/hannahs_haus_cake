@@ -40,6 +40,24 @@ class DogApplicationTable extends Table
         $this->setTable('dog_application');
         $this->setDisplayField('approved');
         $this->setPrimaryKey('id');
+
+        // Application belongs to a User (the applicant)
+        $this->belongsTo('Users', [
+            'foreignKey' => 'userId',
+            'joinType' => 'INNER'
+        ]);
+
+        // Application belongs to a Dog
+        $this->belongsTo('Dogs', [
+            'foreignKey' => 'dogId',
+            'joinType' => 'INNER'
+        ]);
+
+        // Application belongs to a PickupMethod
+        $this->belongsTo('PickupMethods', [
+            'foreignKey' => 'pickupMethodId',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
@@ -79,5 +97,32 @@ class DogApplicationTable extends Table
             ->allowEmptyDateTime('approvedDate');
 
         return $validator;
+    }
+
+    /**
+     * Find pending applications for a specific dog
+     *
+     * @param \Cake\ORM\Query $query The query object
+     * @param array $options Options including 'dogId'
+     * @return \Cake\ORM\Query
+     */
+    public function findPendingForDog(Query $query, array $options): Query
+    {
+        return $query->where([
+            'DogApplication.dogId' => $options['dogId'],
+            'DogApplication.approved' => '0'
+        ]);
+    }
+
+    /**
+     * Find all applications by a specific user
+     *
+     * @param \Cake\ORM\Query $query The query object
+     * @param array $options Options including 'userId'
+     * @return \Cake\ORM\Query
+     */
+    public function findByUser(Query $query, array $options): Query
+    {
+        return $query->where(['DogApplication.userId' => $options['userId']]);
     }
 }

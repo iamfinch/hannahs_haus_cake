@@ -13,7 +13,7 @@ class UsersController extends AppController
 {
     public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
-        $this->Authentication->allowUnauthenticated(['login', 'index', 'add']);
+        $this->Authentication->allowUnauthenticated(['login', 'logout', 'index', 'add']);
     }
 
     /**
@@ -51,7 +51,7 @@ class UsersController extends AppController
      */
     public function add()
     {
-        $this->set('authUser', $this->Authorization->user('id'));
+        $this->set('authUser', $this->Authentication->getIdentity()?->id);
         $countries = $this->fetchModel('countries');
         $foundCountries = $countries->find('list', ["keyField" => "id", "valueField" => "name"]);
 
@@ -132,5 +132,18 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $this->Flash->error('Invalid username or password');
         }
+    }
+
+    /**
+     * Logout method
+     *
+     * @return \Cake\Http\Response|null Redirects to login page.
+     */
+    public function logout()
+    {
+        $this->Authentication->logout();
+        $this->Flash->success(__('You have been logged out.'));
+
+        return $this->redirect(['action' => 'login']);
     }
 }

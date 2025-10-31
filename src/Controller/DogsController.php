@@ -18,9 +18,18 @@ class DogsController extends AppController
      */
     public function index()
     {
-        $dogs = $this->paginate($this->Dogs);
+        // Show only available dogs to public, all dogs to admins
+        $identity = $this->Authentication->getIdentity();
+        $isAdmin = $identity && $identity->get('isAdmin');
 
-        $this->set(compact('dogs'));
+        if ($isAdmin) {
+            $dogs = $this->paginate($this->Dogs);
+        } else {
+            $query = $this->Dogs->find('available');
+            $dogs = $this->paginate($query);
+        }
+
+        $this->set(compact('dogs', 'isAdmin'));
     }
 
     /**
@@ -71,6 +80,10 @@ class DogsController extends AppController
         $dog = $this->Dogs->get($id, [
             'contain' => [],
         ]);
+
+        // Authorization check - only admins can edit dogs
+        $this->Authorization->authorize($dog);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $dog = $this->Dogs->patchEntity($dog, $this->request->getData());
             if ($this->Dogs->save($dog)) {
