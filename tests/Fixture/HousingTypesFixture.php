@@ -7,6 +7,18 @@ use Cake\TestSuite\Fixture\TestFixture;
 
 /**
  * HousingTypesFixture
+ *
+ * Provides housing type data for testing user profiles and adoption eligibility.
+ *
+ * Housing Types:
+ * - ID 1: House
+ * - ID 2: Apartment
+ * - ID 3: Other
+ *
+ * This fixture matches production data from InsertHousingTypes migration.
+ *
+ * Referenced by:
+ * - UsersFixture: Users 1 & 2 have housingTypeId 1 (House), User 3 has housingTypeId 2 (Apartment)
  */
 class HousingTypesFixture extends TestFixture
 {
@@ -20,7 +32,15 @@ class HousingTypesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet',
+                'name' => 'House',
+            ],
+            [
+                'id' => 2,
+                'name' => 'Apartment',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Other',
             ],
         ];
         parent::init();

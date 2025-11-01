@@ -37,7 +37,7 @@ class CreateDogApplications extends AbstractMigration
                 ["constraint" => "application_pickup_method_id"]
             )
             ->addColumn("dateCreated", "datetime")
-            ->addColumn("approved", "enum", ["values" => ["-1", "0", "1"], "default" => "0"])
+            ->addColumn("approved", "string", ["limit" => 2, "default" => "0", "null" => false, "comment" => "Application status: -1 (rejected), 0 (pending), 1 (approved)"])
             ->addColumn("approvedDate", "datetime", ["default" => null, "null" => true])
             ->create();
     }

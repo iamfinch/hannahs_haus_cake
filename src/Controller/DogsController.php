@@ -62,7 +62,26 @@ class DogsController extends AppController
             'contain' => [],
         ]);
 
-        $this->set(compact('dog'));
+        // Check authentication status
+        $identity = $this->Authentication->getIdentity();
+        $isAuthenticated = !is_null($identity);
+
+        // Initialize pending application check
+        $hasPendingApplication = false;
+
+        // If user is authenticated (not admin), check for pending application
+        if ($isAuthenticated && !$identity->get('isAdmin')) {
+            $userId = $identity->getIdentifier();
+
+            $pendingApp = $this->fetchTable('DogApplication')
+                ->find('pendingForDog', ['dogId' => $dog->id])
+                ->where(['DogApplication.userId' => $userId])
+                ->first();
+
+            $hasPendingApplication = !is_null($pendingApp);
+        }
+
+        $this->set(compact('dog', 'hasPendingApplication', 'isAuthenticated'));
     }
 
     /**

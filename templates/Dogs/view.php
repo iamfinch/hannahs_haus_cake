@@ -2,19 +2,48 @@
 /**
  * @var \App\View\AppView $this
  * @var \App\Model\Entity\Dog $dog
+ * @var bool $isAuthenticated
+ * @var bool $hasPendingApplication
  */
 ?>
 <?php
-$isAdmin = $this->request->getSession()->read("User.isAdmin");
-$button = $isAdmin ? $this->Html->link(
-    'View Applications',
-    "/dogApplication/view/{$dog->id}",
-    ['class' => 'button', 'target' => '_blank']
-) : $this->Html->link(
-    'Apply to Adopt!',
-    "/dogApplication/add",
-    ['class' => 'button', 'target' => '_blank']
-);
+// Determine button state and content based on user authentication and dog status
+$identity = $this->request->getAttribute('identity');
+$isAdmin = $identity && $identity->get('isAdmin');
+
+if ($isAdmin) {
+    // Admins see "View Applications" button
+    $button = $this->Html->link(
+        'View Applications',
+        ['controller' => 'DogApplication', 'action' => 'index', '?' => ['dogId' => $dog->id]],
+        ['class' => 'button button-primary']
+    );
+} elseif ($dog->adopted) {
+    // Dog is adopted - disabled button
+    $button = '<button class="button button-disabled" disabled>Already Adopted</button>';
+} elseif ($dog->retired) {
+    // Dog is retired - disabled button
+    $button = '<button class="button button-disabled" disabled>Not Available</button>';
+} elseif (!$isAuthenticated) {
+    // User not logged in - link to login with return URL
+    $returnUrl = $this->Url->build(['controller' => 'Dogs', 'action' => 'view', $dog->id], ['fullBase' => false]);
+    $button = $this->Html->link(
+        'Login to Apply',
+        ['controller' => 'Users', 'action' => 'login', '?' => ['redirect' => $returnUrl]],
+        ['class' => 'button button-secondary']
+    );
+} elseif ($hasPendingApplication) {
+    // User has pending application - disabled button with link to applications
+    $button = '<button class="button button-warning" disabled>Application Pending</button> ' .
+              $this->Html->link('View My Applications', ['controller' => 'DogApplication', 'action' => 'myApplications'], ['class' => 'button-link']);
+} else {
+    // User can apply - main CTA button
+    $button = $this->Html->link(
+        'Apply to Adopt!',
+        ['controller' => 'DogApplication', 'action' => 'apply', $dog->id],
+        ['class' => 'button button-primary button-large']
+    );
+}
 ?>
 <div class="column">
     <!-- <aside class="column">
@@ -94,6 +123,78 @@ $button = $isAdmin ? $this->Html->link(
     <?php } ?>
 
     <div class="row">
-        
+        <div class="adoption-action">
+            <?= $button ?>
+        </div>
     </div>
 </div>
+
+<style>
+.adoption-action {
+    margin: 2rem 0;
+    padding: 2rem;
+    text-align: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.button-primary {
+    background-color: #8FACC0;
+    color: white;
+}
+
+.button-primary:hover {
+    background-color: #7a95ac;
+}
+
+.button-primary.button-large {
+    padding: 1rem 3rem;
+    font-size: 1.25rem;
+}
+
+.button-secondary {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 2px solid #8FACC0;
+}
+
+.button-secondary:hover {
+    background-color: #8FACC0;
+    color: white;
+}
+
+.button-disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.button-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
+.button-link {
+    display: inline-block;
+    margin-left: 1rem;
+    color: #8FACC0;
+    text-decoration: underline;
+}
+
+.button-link:hover {
+    color: #7a95ac;
+}
+</style>
