@@ -28,7 +28,7 @@ docs/
 ├── workflows/            # Business process workflows
 │   └── adoption-process.md
 ├── development/          # Development practices and patterns
-│   └── (future content)
+│   └── testing-patterns.md
 └── README.md            # This file
 ```
 
@@ -123,6 +123,40 @@ Detailed documentation of the multi-step adoption workflow:
 
 ---
 
+## 🧪 Development Documentation
+
+### Testing Architecture & Patterns
+
+#### [Testing Patterns](development/testing-patterns.md)
+**Complete Test Suite Documentation with Patterns & Best Practices**
+
+Comprehensive documentation of the testing architecture and methodologies:
+
+**Diagrams Included:**
+1. **Testing Architecture Overview** - Hierarchical structure showing test types (integration, unit, policy tests)
+2. **Fixture Dependency Graph** - Visual representation of fixture loading order and foreign key relationships
+3. **Controller Integration Test Flow** - Sequence diagram of full HTTP request lifecycle in tests
+4. **Policy Test Pattern Flowchart** - Authorization testing pattern with mock identities
+
+**Key Topics:**
+- Controller integration testing with IntegrationTestTrait
+- Policy authorization testing with mock identities (Admin, User, Guest)
+- Model/Table unit testing for business logic
+- Fixture management and dependency ordering
+- Authentication and CSRF mocking patterns
+- Database state assertions
+- Best practices and common patterns
+- Running tests locally and in Docker
+
+**Test Coverage:**
+- 22 test files (13 controller, 6 model, 3 policy)
+- 7 fixtures with documented purposes
+- Comprehensive test scenarios (authentication, authorization, validation, edge cases)
+
+**When to use this diagram:** Writing new tests, understanding test patterns, debugging test failures, or learning the fixture dependency structure.
+
+---
+
 ## 🎯 Quick Navigation
 
 ### For New Developers
@@ -130,11 +164,13 @@ Start here to understand the system:
 1. [Core Domain ERD](architecture/database-erd-core.md) - Understand the main entities
 2. [Authentication & Authorization Flow](architecture/auth-flow.md) - Learn the security model
 3. [Adoption Workflow](workflows/adoption-process.md) - Understand the business process
+4. [Testing Patterns](development/testing-patterns.md) - Learn how to write and run tests
 
 ### For Backend Developers
 - [Core Domain ERD](architecture/database-erd-core.md) - Database relationships
 - [User Profile ERD](architecture/database-erd-lookups.md) - Complete schema details
 - [Authorization Flow](architecture/auth-flow.md) - Policy implementation
+- [Testing Patterns](development/testing-patterns.md) - Test suite architecture and patterns
 
 ### For Product Managers / Business Analysts
 - [Adoption Workflow](workflows/adoption-process.md) - Business process overview
@@ -279,14 +315,14 @@ For consistency across all diagrams:
 |----------|-------|----------|--------|
 | **Architecture** | 3 | 7 | ✅ Complete |
 | **Workflows** | 1 | 3 | ✅ Complete |
-| **Development** | 0 | 0 | 📝 Planned |
-| **Total** | **4** | **10** | - |
+| **Development** | 1 | 4 | ✅ Complete |
+| **Total** | **5** | **14** | - |
 
 ### Coverage Summary
 - ✅ Database schema (complete)
 - ✅ Authentication & authorization (complete)
 - ✅ Adoption workflow (complete)
-- 📝 Testing patterns (planned)
+- ✅ Testing patterns (complete)
 - 📝 Deployment workflows (planned)
 - 📝 API documentation (planned)
 
