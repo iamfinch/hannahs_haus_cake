@@ -43,6 +43,8 @@ class User extends Entity
         'password' => true,
         'fname' => true,
         'lname' => true,
+        'address1' => true,
+        'address2' => true,
         'countryId' => true,
         'stateId' => true,
         'zipcode' => true,

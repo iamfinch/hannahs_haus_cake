@@ -139,15 +139,338 @@ class UsersControllerTest extends TestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 
+    // ========================================================================
+    // USER REGISTRATION TESTS - add() action
+    // ========================================================================
+
     /**
-     * Test add method
+     * Test add GET request renders registration form
+     *
+     * GET /users/add should display registration form with lookup data
      *
      * @return void
      * @uses \App\Controller\UsersController::add()
      */
-    public function testAdd(): void
+    public function testAddGetRendersForm(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // GET registration page
+        $this->get('/users/add');
+
+        // Should render form successfully
+        $this->assertResponseOk();
+
+        // Verify view variables are set for form dropdowns
+        $user = $this->viewVariable('user');
+        $this->assertNotNull($user, 'User entity should be available in view');
+
+        $countries = $this->viewVariable('foundCountries');
+        $this->assertNotNull($countries, 'Countries should be available for dropdown');
+
+        $housingTypes = $this->viewVariable('foundHousingTypes');
+        $this->assertNotNull($housingTypes, 'Housing types should be available for dropdown');
+    }
+
+    /**
+     * Test add POST with valid data creates user
+     *
+     * Complete registration with valid data should save user and redirect
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostWithValidData(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        // Get initial user count
+        $users = $this->getTableLocator()->get('Users');
+        $countBefore = $users->find()->count();
+
+        // Submit valid registration data
+        $this->post('/users/add', [
+            'email' => 'newuser@example.com',
+            'password' => 'SecurePass123!',
+            'fname' => 'New',
+            'lname' => 'User',
+            'address1' => '123 Test St',
+            'address2' => '',
+            'countryId' => 1,
+            'stateId' => 1,
+            'zipcode' => 12345,
+            'housingTypeId' => 1,
+            'hasChildren' => false,
+            'everOwnedDogs' => false,
+            'primaryCareTaker' => false,
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'lastModified' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Should redirect to index on success
+        $this->assertRedirect(['action' => 'index']);
+
+        // Should show success message
+        $this->assertSession('The user has been saved.', 'Flash.flash.0.message');
+
+        // Verify user was created in database
+        $countAfter = $users->find()->count();
+        $this->assertEquals(
+            $countBefore + 1,
+            $countAfter,
+            'User count should increase by 1'
+        );
+
+        // Verify new user exists with correct email
+        $newUser = $users->findByEmail('newuser@example.com')->first();
+        $this->assertNotNull($newUser, 'New user should exist in database');
+        $this->assertEquals('New', $newUser->fname);
+        $this->assertEquals('User', $newUser->lname);
+    }
+
+    /**
+     * Test add POST with invalid email shows validation error
+     *
+     * Invalid email format should re-render form with errors
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostWithInvalidEmail(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        // Get initial user count
+        $users = $this->getTableLocator()->get('Users');
+        $countBefore = $users->find()->count();
+
+        // Submit with invalid email
+        $this->post('/users/add', [
+            'email' => 'notanemail',
+            'password' => 'SecurePass123!',
+            'fname' => 'Test',
+            'lname' => 'User',
+            'address1' => '123 Test St',
+            'address2' => '',
+            'countryId' => 1,
+            'stateId' => 1,
+            'zipcode' => 12345,
+            'housingTypeId' => 1,
+            'hasChildren' => false,
+            'everOwnedDogs' => false,
+            'primaryCareTaker' => false,
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'lastModified' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Should re-render form with error (not redirect)
+        $this->assertResponseOk();
+
+        // Verify user was NOT created
+        $countAfter = $users->find()->count();
+        $this->assertEquals($countBefore, $countAfter, 'User count should not change');
+    }
+
+    /**
+     * Test add POST with duplicate email shows unique constraint error
+     *
+     * Attempting to register with existing email should fail
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostWithDuplicateEmail(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        // Get initial user count
+        $users = $this->getTableLocator()->get('Users');
+        $countBefore = $users->find()->count();
+
+        // Submit with email that already exists in fixture (user@example.com)
+        $this->post('/users/add', [
+            'email' => 'user@example.com',
+            'password' => 'SecurePass123!',
+            'fname' => 'Duplicate',
+            'lname' => 'User',
+            'address1' => '456 Test Ave',
+            'address2' => '',
+            'countryId' => 1,
+            'stateId' => 1,
+            'zipcode' => 54321,
+            'housingTypeId' => 1,
+            'hasChildren' => false,
+            'everOwnedDogs' => false,
+            'primaryCareTaker' => false,
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'lastModified' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Should re-render form (not redirect)
+        $this->assertResponseOk();
+
+        // Verify user was NOT created
+        $countAfter = $users->find()->count();
+        $this->assertEquals($countBefore, $countAfter, 'User count should not change');
+    }
+
+    /**
+     * Test add POST with missing required fields shows validation errors
+     *
+     * Missing required fields should fail validation
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostWithMissingRequiredFields(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        // Get initial user count
+        $users = $this->getTableLocator()->get('Users');
+        $countBefore = $users->find()->count();
+
+        // Submit with missing required fields (password, fname, lname)
+        $this->post('/users/add', [
+            'email' => 'incomplete@example.com',
+            'address1' => '123 Test St',
+            'address2' => '',
+            'countryId' => 1,
+            'stateId' => 1,
+            'zipcode' => 12345,
+            'housingTypeId' => 1,
+            // Missing: password, fname, lname
+        ]);
+
+        // Should re-render form with errors
+        $this->assertResponseOk();
+
+        // Verify user was NOT created
+        $countAfter = $users->find()->count();
+        $this->assertEquals($countBefore, $countAfter, 'User count should not change');
+    }
+
+    /**
+     * Test add POST with invalid countryId causes database error
+     *
+     * Invalid foreign key causes database constraint error (500)
+     * Note: CakePHP doesn't validate foreign keys before save in this implementation
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostWithInvalidCountryId(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        // Get initial user count
+        $users = $this->getTableLocator()->get('Users');
+        $countBefore = $users->find()->count();
+
+        // Submit with non-existent countryId - this will cause a 500 error
+        // because CakePHP doesn't validate foreign keys before attempting save
+        $this->post('/users/add', [
+            'email' => 'test@example.com',
+            'password' => 'SecurePass123!',
+            'fname' => 'Test',
+            'lname' => 'User',
+            'address1' => '123 Test St',
+            'address2' => '',
+            'countryId' => 9999, // Non-existent
+            'stateId' => 1,
+            'zipcode' => 12345,
+            'housingTypeId' => 1,
+            'hasChildren' => false,
+            'everOwnedDogs' => false,
+            'primaryCareTaker' => false,
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'lastModified' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Foreign key constraint violation causes 500 Internal Server Error
+        $this->assertResponseCode(500, 'Invalid foreign key should cause database error');
+
+        // Verify user was NOT created
+        $countAfter = $users->find()->count();
+        $this->assertEquals($countBefore, $countAfter, 'User count should not change');
+    }
+
+    /**
+     * Test add POST password is automatically hashed
+     *
+     * Passwords should be stored hashed, not as plain text
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddPostPasswordIsHashed(): void
+    {
+        // Enable CSRF token for POST
+        $this->enableCsrfToken();
+
+        $plainPassword = 'MyTestPassword123!';
+
+        // Submit valid registration
+        $this->post('/users/add', [
+            'email' => 'hashtest@example.com',
+            'password' => $plainPassword,
+            'fname' => 'Hash',
+            'lname' => 'Test',
+            'address1' => '789 Hash Ln',
+            'address2' => '',
+            'countryId' => 1,
+            'stateId' => 1,
+            'zipcode' => 99999,
+            'housingTypeId' => 1,
+            'hasChildren' => false,
+            'everOwnedDogs' => false,
+            'primaryCareTaker' => false,
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'lastModified' => date('Y-m-d H:i:s'),
+        ]);
+
+        // Should redirect on success
+        $this->assertRedirect(['action' => 'index']);
+
+        // Retrieve user from database
+        $users = $this->getTableLocator()->get('Users');
+        $user = $users->findByEmail('hashtest@example.com')->first();
+
+        // Verify password is hashed
+        $this->assertNotNull($user);
+        $this->assertStringStartsWith('$2y$', $user->password, 'Password should be bcrypt hashed');
+        $this->assertNotEquals($plainPassword, $user->password, 'Password should not be plain text');
+
+        // Verify password can be verified
+        $hasher = new DefaultPasswordHasher();
+        $this->assertTrue(
+            $hasher->check($plainPassword, $user->password),
+            'Hashed password should verify against plain text'
+        );
+    }
+
+    /**
+     * Test add GET when already authenticated
+     *
+     * Authenticated users should still be able to access registration
+     * (admin may register new users)
+     *
+     * @return void
+     * @uses \App\Controller\UsersController::add()
+     */
+    public function testAddGetWhenAuthenticated(): void
+    {
+        // Mock authenticated session
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => true]]);
+
+        // GET registration page while authenticated
+        $this->get('/users/add');
+
+        // Should still render form (admins can register new users)
+        $this->assertResponseOk();
     }
 
     /**
