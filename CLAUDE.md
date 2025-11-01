@@ -99,6 +99,17 @@ The application uses `cakephp/authentication` plugin configured in `src/Applicat
 - **Authenticators:** Session and Form authentication
 - **Login URL:** `/users/login`
 - **Unauthenticated redirects:** Automatically redirects to login page
+- **Public actions:** By default, `index` and `view` actions are unauthenticated (configured in `AppController::beforeFilter()`)
+
+### Authorization System
+
+The application uses `cakephp/authorization` plugin with policy-based authorization:
+- **Resolver:** ORM-based policy resolver
+- **Policies:** Located in `src/Policy/` directory
+  - `UserPolicy.php` - Controls user profile access (view/edit/delete)
+  - `DogPolicy.php` - Controls dog management permissions
+  - `DogApplicationPolicy.php` - Controls application submission permissions
+- **Admin role:** Users with `isAdmin` flag have elevated permissions across policies
 
 ### Core Domain Models
 
@@ -144,6 +155,9 @@ Templates are located in `templates/` directory organized by controller:
 Located in `webroot/`:
 - `webroot/css/` - Styles (uses Milligram CSS framework)
 - `webroot/js/` - JavaScript files organized by controller
+  - Client-side validation implemented for forms (e.g., `Users/add.js` for registration)
+  - Uses jQuery for DOM manipulation and AJAX requests
+  - Dynamic form behavior (e.g., state selection based on country, conditional address fields)
 - `webroot/img/` - Images
 
 ### Database Migrations
@@ -189,3 +203,32 @@ When working with this codebase, follow CakePHP conventions:
 - Test files: `tests/TestCase/`
 - Test configuration: `phpunit.xml.dist`
 - Test database: Use SQLite or configure `DATABASE_TEST_URL` environment variable
+
+## Running Commands in Docker
+
+When the application is running in Docker, execute CakePHP commands inside the container:
+
+```bash
+# Run migrations in Docker
+docker exec -it myapp-webserver bin/cake migrations migrate
+
+# Run tests in Docker
+docker exec -it myapp-webserver vendor/bin/phpunit
+
+# Access container shell
+docker exec -it myapp-webserver bash
+```
+
+## Key Application Features
+
+### User Registration Flow
+- Multi-field registration form with client-side validation
+- Password requirements: uppercase, lowercase, number, special character, min 8 chars
+- Dynamic country/state selection
+- Conditional housing-type fields (e.g., apartment number required for non-house types)
+
+### Dog Adoption Workflow
+1. Users browse available dogs
+2. Submit adoption application (DogApplication)
+3. Applications contain pickup method preference
+4. Admin approval workflow (approved flag + approvedDate tracking)

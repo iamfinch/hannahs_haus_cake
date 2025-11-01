@@ -37,6 +37,7 @@ class AppView extends View
      */
     public function initialize(): void
     {
-        $this->loadHelper('Authentication.Authentication');
+        // Authentication helper is not available in cakephp/authentication v2.x
+        // Use $this->request->getAttribute('identity') instead to access user data
     }
 }

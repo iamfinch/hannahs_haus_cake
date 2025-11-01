@@ -12,6 +12,23 @@ namespace App\Controller;
 class DogsController extends AppController
 {
     /**
+     * Before filter callback
+     */
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+
+        // Allow unauthenticated access to public dog browsing
+        $this->Authentication->addUnauthenticatedActions(['index', 'view']);
+
+        // Skip authorization for public browsing actions
+        // Admin actions (add, edit, delete) will use authorization checks
+        if (in_array($this->request->getParam('action'), ['index', 'view'])) {
+            $this->Authorization->skipAuthorization();
+        }
+    }
+
+    /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view

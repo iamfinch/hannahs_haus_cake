@@ -100,6 +100,52 @@ class DogApplicationTable extends Table
     }
 
     /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules): RulesChecker
+    {
+        // Foreign key validation
+        $rules->add($rules->existsIn(['userId'], 'Users'), [
+            'errorField' => 'userId',
+            'message' => 'User does not exist'
+        ]);
+        $rules->add($rules->existsIn(['dogId'], 'Dogs'), [
+            'errorField' => 'dogId',
+            'message' => 'Dog does not exist'
+        ]);
+        $rules->add($rules->existsIn(['pickupMethodId'], 'PickupMethods'), [
+            'errorField' => 'pickupMethodId',
+            'message' => 'Pickup method does not exist'
+        ]);
+
+        // Prevent duplicate pending applications for the same dog by the same user
+        $rules->add(function ($entity, $options) {
+            if (!$entity->isNew()) {
+                return true; // Only check on create
+            }
+
+            $existingApplication = $this->find()
+                ->where([
+                    'userId' => $entity->userId,
+                    'dogId' => $entity->dogId,
+                    'approved' => '0'  // Pending status
+                ])
+                ->first();
+
+            return $existingApplication === null;
+        }, 'uniquePendingApplication', [
+            'errorField' => 'dogId',
+            'message' => 'You already have a pending application for this dog'
+        ]);
+
+        return $rules;
+    }
+
+    /**
      * Find pending applications for a specific dog
      *
      * @param \Cake\ORM\Query $query The query object

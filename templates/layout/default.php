@@ -84,7 +84,7 @@ $cakeDescription = 'Hannah\'s Haus : ';
                 </div>
 
                 <div class="top-nav-links">
-                    <?php if ($this->Authentication->getIdentity()) {?>
+                    <?php if ($this->request->getAttribute('identity')) {?>
                         <?= $this->Html->link(__('Profile'), ['controller' => 'users', 'action' => 'profile']) ?>
                         <?= $this->Html->link(__('Logout'), ['controller' => 'users', 'action' => 'logout']) ?>
                     <?php } else { ?>

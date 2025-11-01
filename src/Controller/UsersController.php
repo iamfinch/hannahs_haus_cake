@@ -14,6 +14,13 @@ class UsersController extends AppController
     public function beforeFilter(\Cake\Event\EventInterface $event) {
         parent::beforeFilter($event);
         $this->Authentication->allowUnauthenticated(['login', 'logout', 'index', 'add']);
+
+        // Skip authorization for public actions
+        // login, logout, and registration (add) are public
+        $publicActions = ['login', 'logout', 'add'];
+        if (in_array($this->request->getParam('action'), $publicActions)) {
+            $this->Authorization->skipAuthorization();
+        }
     }
 
     /**

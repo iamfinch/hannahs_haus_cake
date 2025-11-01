@@ -32,8 +32,12 @@ use Cake\View\Exception\MissingTemplateException;
 class PagesController extends AppController
 {
     public function beforeFilter(\Cake\Event\EventInterface $event) {
+        parent::beforeFilter($event);
         $this->Authentication->allowUnauthenticated(['index', 'adoptionPolicy']);
         $this->Authentication->addUnauthenticatedActions(['display']);
+
+        // Skip authorization for all public pages
+        $this->Authorization->skipAuthorization();
     }
 
     /**

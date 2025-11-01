@@ -102,4 +102,30 @@ class DogApplicationController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    /**
+     * My Applications method - View user's own applications
+     *
+     * @return \Cake\Http\Response|null|void Renders view
+     */
+    public function myApplications()
+    {
+        // Must be authenticated
+        $identity = $this->Authentication->getIdentity();
+        if (!$identity) {
+            $this->Flash->error(__('You must be logged in to view your applications.'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        }
+
+        $userId = $identity->getIdentifier();
+
+        // Get all applications for this user with associated dog and pickup method data
+        $applications = $this->DogApplication
+            ->find('byUser', ['userId' => $userId])
+            ->contain(['Dogs', 'PickupMethods'])
+            ->order(['DogApplication.dateCreated' => 'DESC'])
+            ->all();
+
+        $this->set(compact('applications'));
+    }
 }
