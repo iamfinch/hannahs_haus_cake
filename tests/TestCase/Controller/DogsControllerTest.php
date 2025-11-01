@@ -33,15 +33,170 @@ class DogsControllerTest extends TestCase
         'app.DogApplication',
     ];
 
+    // ========================================================================
+    // INDEX METHOD TESTS - Public vs Admin dog listing
+    // ========================================================================
+
     /**
-     * Test index method
+     * Test index as unauthenticated user
+     *
+     * Public users should only see available dogs (not adopted or retired)
      *
      * @return void
      * @uses \App\Controller\DogsController::index()
      */
-    public function testIndex(): void
+    public function testIndexAsUnauthenticatedUser(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // GET dog index without authentication
+        $this->get('/dogs/index');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Should have dogs in view vars
+        $dogs = $this->viewVariable('dogs');
+        $this->assertNotNull($dogs);
+
+        // Public should only see available dogs (Buddy - ID 1)
+        // Should NOT see Luna (adopted) or Max (retired)
+        $dogIds = [];
+        foreach ($dogs as $dog) {
+            $dogIds[] = $dog->id;
+        }
+        $this->assertContains(1, $dogIds, 'Should see Buddy (available)');
+        $this->assertNotContains(2, $dogIds, 'Should NOT see Luna (adopted)');
+        $this->assertNotContains(3, $dogIds, 'Should NOT see Max (retired)');
+
+        // isAdmin flag should be false
+        $isAdmin = $this->viewVariable('isAdmin');
+        $this->assertFalse($isAdmin);
+    }
+
+    /**
+     * Test index as authenticated regular user
+     *
+     * Authenticated non-admin users see same as public (only available dogs)
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::index()
+     */
+    public function testIndexAsAuthenticatedRegularUser(): void
+    {
+        // Log in as John Doe (regular user, not admin)
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // GET dog index
+        $this->get('/dogs/index');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Should have dogs in view vars
+        $dogs = $this->viewVariable('dogs');
+        $this->assertNotNull($dogs);
+
+        // Regular users should only see available dogs
+        $dogIds = [];
+        foreach ($dogs as $dog) {
+            $dogIds[] = $dog->id;
+        }
+        $this->assertContains(1, $dogIds, 'Should see Buddy (available)');
+        $this->assertNotContains(2, $dogIds, 'Should NOT see Luna (adopted)');
+        $this->assertNotContains(3, $dogIds, 'Should NOT see Max (retired)');
+
+        // isAdmin flag should be false
+        $isAdmin = $this->viewVariable('isAdmin');
+        $this->assertFalse($isAdmin);
+    }
+
+    /**
+     * Test index as admin user
+     *
+     * Admins see ALL dogs (available, adopted, and retired)
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::index()
+     */
+    public function testIndexAsAdmin(): void
+    {
+        // Log in as Admin (user ID 2)
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // GET dog index
+        $this->get('/dogs/index');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Should have dogs in view vars
+        $dogs = $this->viewVariable('dogs');
+        $this->assertNotNull($dogs);
+
+        // Admin should see ALL dogs
+        $dogIds = [];
+        foreach ($dogs as $dog) {
+            $dogIds[] = $dog->id;
+        }
+        $this->assertContains(1, $dogIds, 'Should see Buddy (available)');
+        $this->assertContains(2, $dogIds, 'Should see Luna (adopted)');
+        $this->assertContains(3, $dogIds, 'Should see Max (retired)');
+
+        // isAdmin flag should be true
+        $isAdmin = $this->viewVariable('isAdmin');
+        $this->assertTrue($isAdmin);
+    }
+
+    /**
+     * Test index pagination
+     *
+     * Verifies that pagination works correctly
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::index()
+     */
+    public function testIndexPagination(): void
+    {
+        // GET dog index with pagination parameters
+        $this->get('/dogs/index?page=1&limit=2');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Should have dogs in view vars
+        $dogs = $this->viewVariable('dogs');
+        $this->assertNotNull($dogs);
+
+        // With only 1 available dog (Buddy), pagination should work
+        // but only return 1 result
+        $count = 0;
+        foreach ($dogs as $dog) {
+            $count++;
+        }
+        $this->assertEquals(1, $count, 'Should return 1 available dog');
+    }
+
+    /**
+     * Test index with no authentication shows available dogs only
+     *
+     * Verifies public view excludes non-available dogs
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::index()
+     */
+    public function testIndexPublicViewExcludesNonAvailable(): void
+    {
+        // GET dog index without authentication
+        $this->get('/dogs/index');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Iterate through returned dogs and verify none are adopted or retired
+        $dogs = $this->viewVariable('dogs');
+        foreach ($dogs as $dog) {
+            $this->assertEquals(0, $dog->adopted, "Dog {$dog->name} should not be adopted in public view");
+            $this->assertEquals(0, $dog->retired, "Dog {$dog->name} should not be retired in public view");
+        }
     }
 
     // ========================================================================
