@@ -6,6 +6,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a CakePHP 4.x application for "Hannah's Haus Cake" - a dog adoption management system. The application manages users, dogs, and adoption applications with authentication and a multi-step application process.
 
+## Visual Documentation
+
+Comprehensive visual documentation is available in the `/docs/` directory using Mermaid JS diagrams. These diagrams render automatically in GitHub, VS Code (with Mermaid extension), and most markdown viewers.
+
+**📚 [Complete Documentation Index](docs/README.md)**
+
+### Quick Links
+
+**Database Schema:**
+- [Core Domain ERD](docs/architecture/database-erd-core.md) - Users, Dogs, DogApplication tables and relationships
+- [User Profile & Lookup Tables ERD](docs/architecture/database-erd-lookups.md) - Complete user profile structure and reference data
+
+**Security & Access Control:**
+- [Authentication & Authorization Flow](docs/architecture/auth-flow.md) - Login sequence, policy-based authorization, role hierarchy
+
+**Business Workflows:**
+- [Dog Adoption Workflow](docs/workflows/adoption-process.md) - Application submission, admin approval, adoption completion
+
+These diagrams complement the textual documentation below and provide visual representations of the system architecture, database relationships, and business processes.
+
 ## Development Environment
 
 ### Docker Setup
@@ -92,6 +112,8 @@ phpstan analyze
 
 ## Architecture
 
+**💡 See Also:** [Authentication & Authorization Flow Diagrams](docs/architecture/auth-flow.md) for visual representations of the security model.
+
 ### Authentication System
 
 The application uses `cakephp/authentication` plugin configured in `src/Application.php`:
@@ -112,6 +134,8 @@ The application uses `cakephp/authorization` plugin with policy-based authorizat
 - **Admin role:** Users with `isAdmin` flag have elevated permissions across policies
 
 ### Core Domain Models
+
+**💡 See Also:** [Database ERD Diagrams](docs/architecture/database-erd-core.md) for complete schema visualization.
 
 **Users:**
 - Entity: `src/Model/Entity/User.php`
@@ -228,7 +252,11 @@ docker exec -it myapp-webserver bash
 - Conditional housing-type fields (e.g., apartment number required for non-house types)
 
 ### Dog Adoption Workflow
+
+**💡 See Also:** [Dog Adoption Workflow Diagrams](docs/workflows/adoption-process.md) for complete process visualization including state transitions and user journeys.
+
 1. Users browse available dogs
 2. Submit adoption application (DogApplication)
 3. Applications contain pickup method preference
 4. Admin approval workflow (approved flag + approvedDate tracking)
+   - Tri-state approval system: "-1" (rejected), "0" (pending), "1" (approved)
