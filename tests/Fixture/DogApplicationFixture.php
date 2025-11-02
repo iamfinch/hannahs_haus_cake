@@ -28,6 +28,45 @@ class DogApplicationFixture extends TestFixture
     public $table = 'dog_application';
 
     /**
+     * Fields (table schema definition)
+     *
+     * @var array
+     */
+    public $fields = [
+        'id' => ['type' => 'integer', 'length' => 10, 'unsigned' => true, 'null' => false, 'default' => null, 'autoIncrement' => true],
+        'userId' => ['type' => 'integer', 'length' => 10, 'unsigned' => true, 'null' => false],
+        'dogId' => ['type' => 'integer', 'length' => 10, 'unsigned' => true, 'null' => false],
+        'pickupMethodId' => ['type' => 'integer', 'length' => 10, 'unsigned' => true, 'null' => false],
+        'dateCreated' => ['type' => 'datetime', 'null' => false],
+        'approved' => ['type' => 'string', 'length' => 1, 'null' => false, 'default' => '0'],
+        'approvedDate' => ['type' => 'datetime', 'null' => true],
+        '_constraints' => [
+            'primary' => ['type' => 'primary', 'columns' => ['id']],
+            'dog_app_user' => [
+                'type' => 'foreign',
+                'columns' => ['userId'],
+                'references' => ['users', 'id'],
+                'update' => 'cascade',
+                'delete' => 'cascade'
+            ],
+            'dog_app_dog' => [
+                'type' => 'foreign',
+                'columns' => ['dogId'],
+                'references' => ['dogs', 'id'],
+                'update' => 'cascade',
+                'delete' => 'cascade'
+            ],
+            'dog_app_pickup' => [
+                'type' => 'foreign',
+                'columns' => ['pickupMethodId'],
+                'references' => ['pickup_methods', 'id'],
+                'update' => 'restrict',
+                'delete' => 'restrict'
+            ],
+        ],
+    ];
+
+    /**
      * Init method
      *
      * @return void

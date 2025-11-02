@@ -92,6 +92,10 @@ class DogsController extends AppController
     public function add()
     {
         $dog = $this->Dogs->newEmptyEntity();
+
+        // Authorization check - only admins can add dogs
+        $this->Authorization->authorize($dog);
+
         if ($this->request->is('post')) {
             $dog = $this->Dogs->patchEntity($dog, $this->request->getData());
             if ($this->Dogs->save($dog)) {
@@ -143,6 +147,10 @@ class DogsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $dog = $this->Dogs->get($id);
+
+        // Authorization check - only admins can delete dogs
+        $this->Authorization->authorize($dog);
+
         if ($this->Dogs->delete($dog)) {
             $this->Flash->success(__('The dog has been deleted.'));
         } else {

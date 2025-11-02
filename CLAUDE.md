@@ -23,6 +23,10 @@ Comprehensive visual documentation is available in the `/docs/` directory using 
 
 **Business Workflows:**
 - [Dog Adoption Workflow](docs/workflows/adoption-process.md) - Application submission, admin approval, adoption completion
+- [Email Notification System](docs/workflows/email-notifications.md) - Automated email flows, templates, MailHog testing
+
+**System Architecture:**
+- [System Overview](docs/architecture/system-overview.md) - Docker services, component interactions, deployment configuration
 
 These diagrams complement the textual documentation below and provide visual representations of the system architecture, database relationships, and business processes.
 
@@ -30,9 +34,10 @@ These diagrams complement the textual documentation below and provide visual rep
 
 ### Docker Setup
 
-The application uses Docker Compose with two services:
+The application uses Docker Compose with three services:
 - `mysql8`: MySQL 8 database (exposed on port 9405)
 - `php-fpm`: PHP 8.2 with Nginx (exposed on port 80)
+- `mailhog`: Email testing service (SMTP port 1025, Web UI port 8025)
 
 **Start services:**
 ```bash
@@ -260,3 +265,74 @@ docker exec -it myapp-webserver bash
 3. Applications contain pickup method preference
 4. Admin approval workflow (approved flag + approvedDate tracking)
    - Tri-state approval system: "-1" (rejected), "0" (pending), "1" (approved)
+
+### Email Notification System
+
+**💡 See Also:** [Email Notification Flow Diagrams](docs/workflows/email-notifications.md) for complete email system visualization including notification scenarios and integration architecture.
+
+The application features a comprehensive email notification system that automatically sends emails at key points in the adoption workflow.
+
+**ApplicationMailer Class:** `src/Mailer/ApplicationMailer.php`
+
+**Email Methods:**
+1. **applicationSubmitted()** - Sends confirmation email to applicant and notification to admin
+   - Recipient: Applicant's email
+   - Subject: "Adoption Application Received for {dogName}"
+   - Template: `templates/email/html/application_submitted.php` + text version
+
+2. **applicationApproved()** - Sends celebratory approval email with next steps
+   - Recipient: Approved applicant's email
+   - Subject: "Your Adoption Application Has Been Approved!"
+   - Template: `templates/email/html/application_approved.php` + text version
+
+3. **applicationRejected()** - Sends empathetic rejection email encouraging other applications
+   - Recipient: Rejected applicant's email
+   - Subject: "Adoption Application Update for {dogName}"
+   - Template: `templates/email/html/application_rejected.php` + text version
+
+4. **adminNewApplication()** - Alerts admin team about new applications requiring review
+   - Recipient: admin@hannahshaus.com
+   - Subject: "New Adoption Application for Review - {dogName}"
+   - Template: `templates/email/html/admin_new_application.php` + text version
+
+**Email Templates:**
+- Location: `templates/email/`
+- 8 total templates (4 HTML + 4 plain text versions)
+- HTML templates use inline CSS for email client compatibility
+- Professional designs with appropriate color schemes (purple for submitted, green for approved, gray for rejected, orange for admin alerts)
+
+**Email Configuration:**
+
+**Development (Current):**
+- Transport: MailHog (SMTP server for testing)
+- Configuration: `config/app.php` (EmailTransport → 'mailhog')
+- SMTP Host: hannahs_haus_mailhog:1025
+- Web UI: http://localhost:8025
+- No real emails sent (all captured in MailHog for testing)
+
+**Production (Future):**
+- Transport: AWS SES (Amazon Simple Email Service)
+- Configuration: `config/app.php` (EmailTransport → 'ses', currently commented out)
+- Requires AWS SES credentials: `AWS_SES_USERNAME`, `AWS_SES_PASSWORD`
+- Sender email must be verified in AWS SES console
+
+**Testing Emails:**
+1. Start Docker services: `docker-compose up -d`
+2. Access MailHog UI: http://localhost:8025
+3. Trigger email by:
+   - Submitting an adoption application (sends 2 emails: confirmation + admin notification)
+   - Approving an application via admin dashboard (sends approval + competing rejections)
+   - Rejecting an application via admin dashboard (sends rejection email)
+4. View captured emails in MailHog (both HTML and plain text versions available)
+
+**Controller Integration:**
+- `DogApplicationController::apply()` - Sends applicationSubmitted() + adminNewApplication()
+- `DogApplicationController::approve()` - Sends applicationApproved() + applicationRejected() for competing apps
+- `DogApplicationController::reject()` - Sends applicationRejected()
+- All email operations wrapped in try-catch blocks with error logging
+- Email failures don't prevent application processing (graceful degradation)
+
+**Unit Tests:**
+- Test file: `tests/TestCase/Mailer/ApplicationMailerTest.php`
+- 8 tests covering all 4 email methods + lazy loading scenarios
+- Tests verify: recipients, subjects, templates, view variables, method chaining

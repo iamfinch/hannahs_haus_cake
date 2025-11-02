@@ -50,8 +50,27 @@ class UsersTable extends Table
 
         // Users can submit multiple adoption applications
         $this->hasMany('DogApplications', [
+            'className' => 'DogApplication',
             'foreignKey' => 'userId',
             'dependent' => true  // Delete applications if user is deleted
+        ]);
+
+        // User belongs to a Country
+        $this->belongsTo('Countries', [
+            'foreignKey' => 'countryId',
+            'joinType' => 'LEFT'
+        ]);
+
+        // User belongs to a State
+        $this->belongsTo('States', [
+            'foreignKey' => 'stateId',
+            'joinType' => 'LEFT'
+        ]);
+
+        // User belongs to a HousingType
+        $this->belongsTo('HousingTypes', [
+            'foreignKey' => 'housingTypeId',
+            'joinType' => 'LEFT'
         ]);
     }
 

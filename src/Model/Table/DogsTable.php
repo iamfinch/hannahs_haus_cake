@@ -51,6 +51,7 @@ class DogsTable extends Table
 
         // Dog can have many applications
         $this->hasMany('DogApplications', [
+            'className' => 'DogApplication',
             'foreignKey' => 'dogId',
             'dependent' => true  // Delete applications if dog is deleted
         ]);

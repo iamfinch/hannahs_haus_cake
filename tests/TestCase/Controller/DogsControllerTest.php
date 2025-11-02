@@ -397,36 +397,463 @@ class DogsControllerTest extends TestCase
         $this->assertEquals(1, $dog->retired, 'Dog should be marked as retired');
     }
 
+    // ========================================================================
+    // ADD METHOD TESTS - Admin-only dog creation
+    // ========================================================================
+
     /**
-     * Test add method
+     * Test add GET request renders form (admin only)
      *
      * @return void
      * @uses \App\Controller\DogsController::add()
      */
-    public function testAdd(): void
+    public function testAddGetAsAdmin(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // GET add form
+        $this->get('/dogs/add');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Verify dog entity is set
+        $dog = $this->viewVariable('dog');
+        $this->assertNotNull($dog, 'Dog entity should be available in view');
     }
 
     /**
-     * Test edit method
+     * Test add GET as non-admin throws ForbiddenException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::add()
+     */
+    public function testAddGetAsRegularUser(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Expect ForbiddenException
+        $this->expectException(\Authorization\Exception\ForbiddenException::class);
+
+        // Login as regular user
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // Attempt to access add form
+        $this->get('/dogs/add');
+    }
+
+    /**
+     * Test add POST with valid data creates dog
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::add()
+     */
+    public function testAddPostWithValidData(): void
+    {
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get initial dog count
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $countBefore = $dogs->find()->count();
+
+        // Submit valid dog data
+        $this->post('/dogs/add', [
+            'name' => 'Rex',
+            'dateBorn' => '2020-01-15 00:00:00',
+            'color' => 'Black and Tan',
+            'retired' => 0,
+            'adopted' => 0,
+        ]);
+
+        // Should redirect to index on success
+        $this->assertRedirect(['action' => 'index']);
+
+        // Should show success message
+        $this->assertSession('The dog has been saved.', 'Flash.flash.0.message');
+
+        // Verify dog was created in database
+        $countAfter = $dogs->find()->count();
+        $this->assertEquals($countBefore + 1, $countAfter, 'Dog count should increase by 1');
+
+        // Verify new dog exists with correct name
+        $newDog = $dogs->findByName('Rex')->first();
+        $this->assertNotNull($newDog, 'New dog should exist in database');
+        $this->assertEquals('Black and Tan', $newDog->color);
+    }
+
+    /**
+     * Test add POST with missing required fields shows validation errors
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::add()
+     */
+    public function testAddPostWithMissingRequiredFields(): void
+    {
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get initial dog count
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $countBefore = $dogs->find()->count();
+
+        // Submit with missing required fields (name)
+        $this->post('/dogs/add', [
+            'color' => 'Brown',
+            // Missing: name, dateBorn
+        ]);
+
+        // Should re-render form with errors
+        $this->assertResponseOk();
+
+        // Verify dog was NOT created
+        $countAfter = $dogs->find()->count();
+        $this->assertEquals($countBefore, $countAfter, 'Dog count should not change');
+    }
+
+    /**
+     * Test add POST as regular user throws ForbiddenException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::add()
+     */
+    public function testAddPostAsRegularUser(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Expect ForbiddenException
+        $this->expectException(\Authorization\Exception\ForbiddenException::class);
+
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as regular user
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // Attempt to create dog
+        $this->post('/dogs/add', [
+            'name' => 'Unauthorized Dog',
+            'dateBorn' => '2020-01-01 00:00:00',
+            'color' => 'Mixed',
+        ]);
+    }
+
+    // ========================================================================
+    // EDIT METHOD TESTS - Admin-only dog editing
+    // ========================================================================
+
+    /**
+     * Test edit GET as admin renders form
      *
      * @return void
      * @uses \App\Controller\DogsController::edit()
      */
-    public function testEdit(): void
+    public function testEditGetAsAdmin(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // GET edit form for Buddy (ID 1)
+        $this->get('/dogs/edit/1');
+
+        // Should render successfully
+        $this->assertResponseOk();
+
+        // Verify correct dog loaded
+        $dog = $this->viewVariable('dog');
+        $this->assertNotNull($dog);
+        $this->assertEquals(1, $dog->id);
+        $this->assertEquals('Buddy', $dog->name);
     }
 
     /**
-     * Test delete method
+     * Test edit GET as regular user throws ForbiddenException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::edit()
+     */
+    public function testEditGetAsRegularUser(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Expect ForbiddenException from authorization failure
+        $this->expectException(\Authorization\Exception\ForbiddenException::class);
+
+        // Login as regular user
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // Attempt to edit dog
+        $this->get('/dogs/edit/1');
+    }
+
+    /**
+     * Test edit POST with valid data updates dog
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::edit()
+     */
+    public function testEditPostWithValidData(): void
+    {
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get current dog data
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $dogBefore = $dogs->get(1);
+        $this->assertEquals('Buddy', $dogBefore->name);
+
+        // POST updated data
+        $this->post('/dogs/edit/1', [
+            'name' => 'Buddy Jr.',  // Changed
+            'dateBorn' => '2021-03-15 00:00:00',
+            'color' => 'Golden',
+            'retired' => 0,
+            'adopted' => 0,
+        ]);
+
+        // Should redirect to index
+        $this->assertRedirect(['action' => 'index']);
+
+        // Should show success message
+        $this->assertSession('The dog has been saved.', 'Flash.flash.0.message');
+
+        // Verify database updated
+        $dogAfter = $dogs->get(1);
+        $this->assertEquals('Buddy Jr.', $dogAfter->name, 'Name should be updated');
+    }
+
+    /**
+     * Test edit POST with invalid data shows validation errors
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::edit()
+     */
+    public function testEditPostWithInvalidData(): void
+    {
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get original name
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $dogBefore = $dogs->get(1);
+        $originalName = $dogBefore->name;
+
+        // POST with empty name (invalid)
+        $this->post('/dogs/edit/1', [
+            'name' => '',  // Invalid - required field
+            'dateBorn' => '2021-03-15 00:00:00',
+            'color' => 'Golden',
+        ]);
+
+        // Should re-render form (not redirect)
+        $this->assertResponseOk();
+
+        // Verify database NOT updated
+        $dogAfter = $dogs->get(1);
+        $this->assertEquals($originalName, $dogAfter->name, 'Name should not change');
+    }
+
+    /**
+     * Test edit POST as regular user throws ForbiddenException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::edit()
+     */
+    public function testEditPostAsRegularUser(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Expect ForbiddenException from authorization failure
+        $this->expectException(\Authorization\Exception\ForbiddenException::class);
+
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as regular user
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // Attempt to edit dog
+        $this->post('/dogs/edit/1', [
+            'name' => 'Hacked Name',
+        ]);
+    }
+
+    /**
+     * Test edit GET with non-existent dog throws RecordNotFoundException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::edit()
+     */
+    public function testEditGetNonExistentDog(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Expect RecordNotFoundException
+        $this->expectException(\Cake\Datasource\Exception\RecordNotFoundException::class);
+
+        // Attempt to edit non-existent dog
+        $this->get('/dogs/edit/9999');
+    }
+
+    // ========================================================================
+    // DELETE METHOD TESTS - Admin-only dog deletion
+    // ========================================================================
+
+    /**
+     * Test delete as admin successfully deletes dog
      *
      * @return void
      * @uses \App\Controller\DogsController::delete()
      */
-    public function testDelete(): void
+    public function testDeleteAsAdmin(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get initial dog count
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $countBefore = $dogs->find()->count();
+        $this->assertEquals(3, $countBefore, 'Should start with 3 fixture dogs');
+
+        // Delete dog ID 3 (Max) as admin
+        $this->post('/dogs/delete/3');
+
+        // Should redirect to index
+        $this->assertRedirect(['action' => 'index']);
+
+        // Should show success message
+        $this->assertSession('The dog has been deleted.', 'Flash.flash.0.message');
+
+        // Verify dog deleted
+        $countAfter = $dogs->find()->count();
+        $this->assertEquals(2, $countAfter, 'Dog count should decrease by 1');
+
+        // Verify specific dog no longer exists
+        $this->assertFalse($dogs->exists(['id' => 3]), 'Dog ID 3 should be deleted');
+    }
+
+    /**
+     * Test delete as regular user throws ForbiddenException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::delete()
+     */
+    public function testDeleteAsRegularUser(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Expect ForbiddenException from authorization failure
+        $this->expectException(\Authorization\Exception\ForbiddenException::class);
+
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as regular user
+        $this->session(['Auth' => ['id' => 1, 'email' => 'user@example.com', 'isAdmin' => 0]]);
+
+        // Attempt to delete dog
+        $this->post('/dogs/delete/1');
+    }
+
+    /**
+     * Test delete non-existent dog throws RecordNotFoundException
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::delete()
+     */
+    public function testDeleteNonExistentDog(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Expect RecordNotFoundException
+        $this->expectException(\Cake\Datasource\Exception\RecordNotFoundException::class);
+
+        // Attempt to delete non-existent dog
+        $this->post('/dogs/delete/9999');
+    }
+
+    /**
+     * Test delete requires POST or DELETE method
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::delete()
+     */
+    public function testDeleteRequiresPostMethod(): void
+    {
+        // Disable error handler to let exception propagate
+        $this->disableErrorHandlerMiddleware();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Expect MethodNotAllowedException for GET request
+        $this->expectException(\Cake\Http\Exception\MethodNotAllowedException::class);
+
+        // Attempt to delete via GET (should fail)
+        $this->get('/dogs/delete/1');
+    }
+
+    /**
+     * Test delete using DELETE HTTP method
+     *
+     * @return void
+     * @uses \App\Controller\DogsController::delete()
+     */
+    public function testDeleteViaDeleteMethod(): void
+    {
+        // Enable CSRF token
+        $this->enableCsrfToken();
+
+        // Login as admin
+        $this->session(['Auth' => ['id' => 2, 'email' => 'admin@hannahshaus.com', 'isAdmin' => 1]]);
+
+        // Get initial dog count
+        $dogs = $this->getTableLocator()->get('Dogs');
+        $countBefore = $dogs->find()->count();
+
+        // Delete using DELETE HTTP method
+        $this->delete('/dogs/delete/3');
+
+        // Should redirect to index
+        $this->assertRedirect(['action' => 'index']);
+
+        // Should show success message
+        $this->assertSession('The dog has been deleted.', 'Flash.flash.0.message');
+
+        // Verify dog deleted
+        $countAfter = $dogs->find()->count();
+        $this->assertEquals($countBefore - 1, $countAfter);
     }
 }

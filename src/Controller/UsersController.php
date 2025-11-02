@@ -16,8 +16,8 @@ class UsersController extends AppController
         $this->Authentication->allowUnauthenticated(['login', 'logout', 'index', 'add']);
 
         // Skip authorization for public actions
-        // login, logout, and registration (add) are public
-        $publicActions = ['login', 'logout', 'add'];
+        // login, logout, index, and registration (add) are public
+        $publicActions = ['login', 'logout', 'index', 'add'];
         if (in_array($this->request->getParam('action'), $publicActions)) {
             $this->Authorization->skipAuthorization();
         }
@@ -47,6 +47,9 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => [],
         ]);
+
+        // Authorize view action per UserPolicy
+        $this->Authorization->authorize($user);
 
         $this->set(compact('user'));
     }
@@ -96,6 +99,10 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => [],
         ]);
+
+        // Authorize edit action per UserPolicy
+        $this->Authorization->authorize($user);
+
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
@@ -119,6 +126,10 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
+
+        // Authorize delete action per UserPolicy (admin only)
+        $this->Authorization->authorize($user);
+
         if ($this->Users->delete($user)) {
             $this->Flash->success(__('The user has been deleted.'));
         } else {

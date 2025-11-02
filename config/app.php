@@ -245,6 +245,53 @@ return [
             'tls' => false,
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
+
+        /*
+         * MailHog - Development email testing
+         *
+         * MailHog captures all outgoing emails and displays them in a web UI.
+         * Perfect for development/testing without sending real emails.
+         *
+         * Web UI: http://localhost:8025
+         * SMTP: hannahs_haus_mailhog:1025 (from within Docker network)
+         *
+         * DO NOT use in production!
+         */
+        'mailhog' => [
+            'className' => 'Smtp',
+            'host' => 'hannahs_haus_mailhog',
+            'port' => 1025,
+            'timeout' => 30,
+            'username' => null,
+            'password' => null,
+            'tls' => false,
+        ],
+
+        /*
+         * AWS SES - Production email delivery
+         *
+         * Uncomment and configure when AWS SES credentials are available.
+         * Required steps before use:
+         * 1. Verify sender email addresses in AWS SES console
+         * 2. Request production access (SES starts in sandbox mode)
+         * 3. Set environment variables: AWS_SES_USERNAME, AWS_SES_PASSWORD
+         * 4. Update Email profile below to use 'ses' transport
+         *
+         * Region-specific SMTP endpoints:
+         * - us-east-1: email-smtp.us-east-1.amazonaws.com
+         * - us-west-2: email-smtp.us-west-2.amazonaws.com
+         * - eu-west-1: email-smtp.eu-west-1.amazonaws.com
+         */
+        // 'ses' => [
+        //     'className' => 'Smtp',
+        //     'host' => 'email-smtp.us-east-1.amazonaws.com',
+        //     'port' => 587,
+        //     'timeout' => 30,
+        //     'username' => env('AWS_SES_USERNAME'),
+        //     'password' => env('AWS_SES_PASSWORD'),
+        //     'client' => null,
+        //     'tls' => true,
+        // ],
     ],
 
     /*
@@ -258,13 +305,10 @@ return [
      */
     'Email' => [
         'default' => [
-            'transport' => 'default',
-            'from' => 'you@localhost',
-            /*
-             * Will by default be set to config value of App.encoding, if that exists otherwise to UTF-8.
-             */
-            //'charset' => 'utf-8',
-            //'headerCharset' => 'utf-8',
+            'transport' => 'mailhog',  // Use MailHog for development (change to 'ses' for production)
+            'from' => ['noreply@hannahshaus.com' => "Hannah's Haus Dog Adoption"],
+            'charset' => 'utf-8',
+            'headerCharset' => 'utf-8',
         ],
     ],
 

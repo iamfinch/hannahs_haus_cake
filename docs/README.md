@@ -1,6 +1,6 @@
 # Hannah's Haus Cake Documentation
 
-**Last Updated:** 2025-11-01
+**Last Updated:** 2025-11-02
 
 Welcome to the visual documentation for the Hannah's Haus Cake dog adoption management system. This documentation provides comprehensive diagrams and explanations of the system architecture, database schema, authentication, authorization, and business workflows.
 
@@ -24,11 +24,16 @@ docs/
 ├── architecture/          # System architecture and technical design
 │   ├── database-erd-core.md
 │   ├── database-erd-lookups.md
-│   └── auth-flow.md
+│   ├── auth-flow.md
+│   └── system-overview.md
 ├── workflows/            # Business process workflows
-│   └── adoption-process.md
+│   ├── adoption-process.md
+│   └── email-notifications.md
 ├── development/          # Development practices and patterns
-│   └── testing-patterns.md
+│   ├── testing-patterns.md
+│   └── admin-setup.md
+├── overview/             # Non-technical project overviews
+│   └── project-overview.md
 └── README.md            # This file
 ```
 
@@ -97,6 +102,38 @@ Comprehensive documentation of the authentication and authorization system:
 
 ---
 
+### System Architecture
+
+#### [System Architecture Overview](architecture/system-overview.md)
+**Complete System Topology and Docker Configuration**
+
+High-level system architecture documentation showing all components and their relationships:
+
+**Diagrams Included:**
+1. **High-Level Architecture** - Complete system topology with all Docker services and external dependencies
+2. **Docker Compose Configuration** - Service relationships, port mappings, networks, and volumes
+
+**Key Topics:**
+- Docker services: mysql8, php-fpm, mailhog
+- Port mappings and external access points
+- Network configuration (bridge network)
+- Volume mounts and data persistence
+- Development vs. production configuration
+- Common Docker commands for daily operations
+- Troubleshooting Docker issues
+- Performance considerations and optimization
+- Security best practices
+- Backup and restore procedures
+
+**Service Details:**
+- **php-fpm**: Nginx + PHP 8.2 web server (port 80)
+- **mysql8**: MySQL 8 database (port 9405 external, 3306 internal)
+- **mailhog**: Email testing service (SMTP 1025, Web UI 8025)
+
+**When to use this diagram:** Understanding Docker setup, troubleshooting container issues, setting up new development environments, or planning deployment architecture.
+
+---
+
 ## 💼 Workflow Documentation
 
 ### Adoption Process
@@ -120,6 +157,39 @@ Detailed documentation of the multi-step adoption workflow:
 - Edge case handling (cancellations, concurrent applications)
 
 **When to use this diagram:** Understanding the adoption business process, implementing approval features, or troubleshooting application state issues.
+
+---
+
+### Email Notification System
+
+#### [Email Notification System](workflows/email-notifications.md)
+**Complete Email Notification Documentation with Integration Architecture**
+
+Comprehensive documentation of the automated email notification system:
+
+**Diagrams Included:**
+1. **Email Notification Flow** - Sequence diagram showing all 4 email scenarios (submission, approval, rejection, admin alerts)
+2. **ApplicationMailer Integration Architecture** - Flowchart showing controller-to-mailer-to-transport flow
+
+**Key Topics:**
+- ApplicationMailer class with 4 email methods
+- Email templates (8 total: HTML + text versions)
+- MailHog development testing setup
+- AWS SES production configuration
+- Controller integration patterns (apply, approve, reject actions)
+- Lazy loading pattern for associations
+- Error handling and logging
+- Template structure and design
+- Testing email notifications
+- Troubleshooting common issues
+
+**Email Scenarios Documented:**
+- Application submission confirmation (user + admin notification)
+- Application approval celebration email
+- Application rejection empathetic messaging
+- Admin new application alerts with applicant details
+
+**When to use this diagram:** Implementing new email notifications, troubleshooting email delivery issues, understanding template structure, or configuring production email transport.
 
 ---
 
@@ -157,28 +227,100 @@ Comprehensive documentation of the testing architecture and methodologies:
 
 ---
 
+### Admin User Management
+
+#### [Admin User Setup Guide](development/admin-setup.md)
+**Complete Guide to Creating and Managing Administrator Accounts**
+
+Comprehensive documentation for creating and managing admin users with elevated privileges:
+
+**Key Topics:**
+- What is an admin user and what privileges they have
+- Current implementation (manual SQL script process)
+- Step-by-step instructions for creating admin users (3 methods documented)
+- Database verification procedures
+- Application verification and testing
+- Managing admin users (listing, revoking privileges)
+- Troubleshooting common issues
+- Security considerations and best practices
+- Future enhancements (automated seeding system)
+
+**Admin Privileges:**
+- Approve/reject adoption applications
+- Access admin dashboard with application statistics
+- Manage dog listings (add, edit, delete)
+- View all user information for application review
+- Receive automatic notifications for new applications
+
+**Related Resources:**
+- SQL script: `private/sql/create-admin-user.sql`
+- SQL directory guide: `private/sql/README.md`
+
+**When to use this guide:** Setting up new admin users, troubleshooting admin access issues, understanding admin permissions, or planning admin management features.
+
+---
+
+## 📋 Non-Technical Documentation
+
+### Project Overview
+
+#### [Project Overview for Non-Technical Readers](overview/project-overview.md)
+**Business-Focused System Overview for Stakeholders**
+
+Simplified documentation written for non-technical audiences including product managers, business analysts, and stakeholders:
+
+**Key Topics:**
+- What is Hannah's Haus Cake (plain language explanation)
+- Who uses the system (adopters and administrators)
+- Key features explained without jargon
+- User journeys and workflows in simple terms
+- Benefits for staff and adopters
+- Current status and future enhancements
+- Common questions and answers
+- Glossary of technical terms
+
+**Target Audience:**
+- Product managers and business analysts
+- Non-technical stakeholders
+- New team members unfamiliar with technical details
+- Management reviewing project status
+
+**When to use this guide:** Onboarding non-technical team members, explaining the system to stakeholders, providing business context, or creating presentations about the project.
+
+---
+
 ## 🎯 Quick Navigation
 
 ### For New Developers
 Start here to understand the system:
-1. [Core Domain ERD](architecture/database-erd-core.md) - Understand the main entities
-2. [Authentication & Authorization Flow](architecture/auth-flow.md) - Learn the security model
-3. [Adoption Workflow](workflows/adoption-process.md) - Understand the business process
-4. [Testing Patterns](development/testing-patterns.md) - Learn how to write and run tests
+1. [System Architecture Overview](architecture/system-overview.md) - Docker setup and system topology
+2. [Core Domain ERD](architecture/database-erd-core.md) - Understand the main entities
+3. [Authentication & Authorization Flow](architecture/auth-flow.md) - Learn the security model
+4. [Adoption Workflow](workflows/adoption-process.md) - Understand the business process
+5. [Email Notifications](workflows/email-notifications.md) - Learn the email system
+6. [Testing Patterns](development/testing-patterns.md) - Learn how to write and run tests
+7. [Admin Setup Guide](development/admin-setup.md) - How to create admin users
 
 ### For Backend Developers
+- [System Architecture Overview](architecture/system-overview.md) - Docker services and deployment
 - [Core Domain ERD](architecture/database-erd-core.md) - Database relationships
 - [User Profile ERD](architecture/database-erd-lookups.md) - Complete schema details
 - [Authorization Flow](architecture/auth-flow.md) - Policy implementation
+- [Email Notifications](workflows/email-notifications.md) - Email system architecture and templates
 - [Testing Patterns](development/testing-patterns.md) - Test suite architecture and patterns
+- [Admin Setup Guide](development/admin-setup.md) - Admin user management
 
 ### For Product Managers / Business Analysts
+- [Project Overview](overview/project-overview.md) - Non-technical system overview
 - [Adoption Workflow](workflows/adoption-process.md) - Business process overview
+- [Email Notifications](workflows/email-notifications.md) - User communication touchpoints
 - [Authorization Flow - Role Hierarchy](architecture/auth-flow.md#role-based-access-control) - User permissions
 
 ### For DevOps / Database Administrators
+- [System Architecture Overview](architecture/system-overview.md) - Docker configuration and deployment
 - [Core Domain ERD](architecture/database-erd-core.md) - Primary tables and indexes
 - [User Profile ERD](architecture/database-erd-lookups.md) - Complete schema with foreign keys
+- [Admin Setup Guide](development/admin-setup.md) - Admin user creation and management
 
 ---
 
@@ -313,16 +455,21 @@ For consistency across all diagrams:
 
 | Category | Files | Diagrams | Status |
 |----------|-------|----------|--------|
-| **Architecture** | 3 | 7 | ✅ Complete |
-| **Workflows** | 1 | 3 | ✅ Complete |
-| **Development** | 1 | 4 | ✅ Complete |
-| **Total** | **5** | **14** | - |
+| **Architecture** | 4 | 9 | ✅ Complete |
+| **Workflows** | 2 | 5 | ✅ Complete |
+| **Development** | 2 | 4 | ✅ Complete |
+| **Overview** | 1 | 0 | ✅ Complete |
+| **Total** | **9** | **18** | - |
 
 ### Coverage Summary
 - ✅ Database schema (complete)
 - ✅ Authentication & authorization (complete)
 - ✅ Adoption workflow (complete)
+- ✅ Email notification system (complete)
 - ✅ Testing patterns (complete)
+- ✅ System architecture (complete)
+- ✅ Admin user management (complete)
+- ✅ Non-technical overview (complete)
 - 📝 Deployment workflows (planned)
 - 📝 API documentation (planned)
 

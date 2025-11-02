@@ -19,9 +19,12 @@ class StatesControllerTest extends TestCase
     /**
      * Fixtures
      *
+     * Loaded in dependency order to satisfy foreign key constraints
+     *
      * @var array<string>
      */
     protected $fixtures = [
+        'app.Countries',
         'app.States',
     ];
 

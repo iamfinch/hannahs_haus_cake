@@ -90,6 +90,27 @@ class UsersFixture extends TestFixture
                 'dateCreated' => '2024-01-02 10:00:00',
                 'lastModified' => '2024-01-02 10:00:00',
             ],
+            // Test user - for deletion testing (NO applications)
+            [
+                'id' => 4,
+                'email' => 'deleteme@example.com',
+                'phoneNumber' => '555-0103',
+                'password' => '$2y$10$JxGuuseB/3SS6UFPfeJrO.2gqzip4RHRsJP3vopTHSuhNxLbYhRpe',
+                'fname' => 'Delete',
+                'lname' => 'Test',
+                'address1' => '999 Temporary Ln',
+                'address2' => '',
+                'countryId' => 1,
+                'stateId' => 1,
+                'zipcode' => 11111,
+                'housingTypeId' => 1,
+                'hasChildren' => 0,
+                'everOwnedDogs' => 0,
+                'primaryCareTaker' => 0,
+                'isAdmin' => 0,
+                'dateCreated' => '2024-01-03 10:00:00',
+                'lastModified' => '2024-01-03 10:00:00',
+            ],
         ];
         parent::init();
     }

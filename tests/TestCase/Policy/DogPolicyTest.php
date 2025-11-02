@@ -56,6 +56,7 @@ class MockAdminIdentity_DogPolicy implements IdentityInterface
 
     // ArrayAccess methods
     public function offsetExists($offset): bool { return isset($this->getOriginalData()[$offset]); }
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) { return $this->getOriginalData()[$offset] ?? null; }
     public function offsetSet($offset, $value): void {}
     public function offsetUnset($offset): void {}
@@ -108,6 +109,7 @@ class MockUserIdentity_DogPolicy implements IdentityInterface
 
     // ArrayAccess methods
     public function offsetExists($offset): bool { return isset($this->getOriginalData()[$offset]); }
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset) { return $this->getOriginalData()[$offset] ?? null; }
     public function offsetSet($offset, $value): void {}
     public function offsetUnset($offset): void {}
